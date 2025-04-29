@@ -33,7 +33,7 @@ jobs:
       image_name: 'rockylinux'
       image_tag: '9-minimal'
       containerfile: 'os/Containerfile'
-      build_arg_file: 'os/zulu-openjdk-17-jdk.conf'
+      build_arg_file: 'os/rocky-linux-9-minimal.conf'
       platforms: 'linux/amd64'
 
   build-zulu-openjdk-21-jdk:
