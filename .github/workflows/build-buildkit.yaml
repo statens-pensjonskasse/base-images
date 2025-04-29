@@ -27,7 +27,8 @@ jobs:
         - name: Build with Docker
           run: |
             docker buildx build \
-              -f buildkit/Dockerfile \
+              -f buildkit/Containerfile \
               --sbom=true \
-              --output=type=registry,oci-mediatypes=true,oci-artifact=true \
               --tag ghcr.io/statens-pensjonskasse/buildkit:spk
+              --push \
+              --platform linux/amd64,linux/arm64
