@@ -11,7 +11,8 @@ on:
 
 jobs:
   build-buildkit:
-    uses: ./.github/workflows/podman-build-and-publish.yml
+    uses: ./.github/workflows/podman-build-and-publish.yaml
+    secrets: inherit
     with:
       image_name: 'buildkit'
       image_tag: 'latest'
@@ -19,8 +20,9 @@ jobs:
       platforms: 'linux/amd64'
 
   build-os:
-    uses: ./.github/workflows/podman-build-and-publish.yml
+    uses: ./.github/workflows/podman-build-and-publish.yaml
     needs: build-buildkit
+    secrets: inherit
     with:
       image_name: 'rockylinux'
       image_tag: '9-minimal'
