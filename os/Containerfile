@@ -23,12 +23,12 @@ RUN sed -i '/^mirrorlist/d' /etc/yum.repos.d/*.repo && \
     sed -i 's/^#baseurl/baseurl/' /etc/yum.repos.d/*.repo
 
 # Evaluate templates for internal yum repositories
-RUN --mount=type=bind,src=repo-files/docker.repo.tmpl,dst=/tmp/docker.repo.tmpl \
-    --mount=type=bind,src=repo-files/microsoft.repo.tmpl,dst=/tmp/microsoft.repo.tmpl \
-    --mount=type=bind,src=repo-files/spk.repo.tmpl,dst=/tmp/spk.repo.tmpl \
-    --mount=type=bind,src=repo-files/spk-epel.repo.tmpl,dst=/tmp/spk-epel.repo.tmpl \
-    --mount=type=bind,src=repo-files/spk-no-el-dep.repo.tmpl,dst=/tmp/spk-no-el-dep.repo.tmpl \
-    --mount=type=bind,src=repo-files/zulu-openjdk.repo.tmpl,dst=/tmp/zulu-openjdk.repo.tmpl \
+RUN --mount=type=bind,src=repos/docker.repo.tmpl,dst=/tmp/docker.repo.tmpl \
+    --mount=type=bind,src=repos/microsoft.repo.tmpl,dst=/tmp/microsoft.repo.tmpl \
+    --mount=type=bind,src=repos/spk.repo.tmpl,dst=/tmp/spk.repo.tmpl \
+    --mount=type=bind,src=repos/spk-epel.repo.tmpl,dst=/tmp/spk-epel.repo.tmpl \
+    --mount=type=bind,src=repos/spk-no-el-dep.repo.tmpl,dst=/tmp/spk-no-el-dep.repo.tmpl \
+    --mount=type=bind,src=repos/zulu-openjdk.repo.tmpl,dst=/tmp/zulu-openjdk.repo.tmpl \
     if [ "${TARGETARCH}" = "amd64" ]; then ARCH=x86_64; \
     elif [ "${TARGETARCH}" = "arm64" ]; then ARCH=aarch64 ; \
     else echo "Målarkitektur '${TARGETARCH}' er ikke støttet" && exit 1; \
