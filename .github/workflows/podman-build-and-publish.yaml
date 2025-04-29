@@ -1,0 +1,86 @@
+name: Reusable Podman Build and Publish
+
+on:
+  workflow_call:
+    inputs:
+      registry:
+        description: 'Container registry URL'
+        type: string
+        default: 'ghcr.io'
+      registry_path:
+        description: 'Path within registry (e.g. organization name)'
+        type: string
+        default: 'statens-pensjonskasse'
+      image_name:
+        description: 'Container image name'
+        type: string
+        required: true
+      image_tag:
+        description: 'Container image tag'
+        type: string
+        required: true
+      containerfile:
+        description: 'Path to the Containerfile/Dockerfile'
+        type: string
+        required: true
+      build_arg_file:
+        description: 'Path to build argument file'
+        type: string
+        required: false
+      platforms:
+        description: 'Comma-separated list of platforms to build for'
+        type: string
+        default: 'linux/amd64'
+      sbom:
+        description: 'Generate Software Bill of Materials'
+        type: boolean
+        default: true
+    secrets:
+      registry_token:
+        description: 'Token for registry authentication'
+        required: false
+
+jobs:
+  build-and-publish:
+    runs-on: self-hosted
+    permissions:
+      contents: read
+      packages: write
+    env:
+      TZ: Europe/Oslo
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Set up full image reference
+        run: echo "IMAGE_REFERENCE=${{ inputs.registry }}/${{ inputs.registry_path }}/${{ inputs.image_name }}:${{ inputs.image_tag }}" >> $GITHUB_ENV
+
+      - name: Build container image
+        run: |
+          BUILD_COMMAND="podman buildx build \
+            --file ${{ inputs.containerfile }} \
+            --tag ${{ env.IMAGE_REFERENCE }} \
+            --platform ${{ inputs.platforms }}"
+          
+          # Add build arg file if provided
+          if [ -n "${{ inputs.build_arg_file }}" ]; then
+            BUILD_COMMAND="${BUILD_COMMAND} --build-arg-file ${{ inputs.build_arg_file }}"
+          fi
+          
+          # Add SBOM generation if enabled
+          if [ "${{ inputs.sbom }}" == "true" ]; then
+            BUILD_COMMAND="${BUILD_COMMAND} --sbom=true"
+          fi
+          
+          eval "${BUILD_COMMAND}"
+
+      - name: Login to Container Registry
+        run: |
+          # Use provided token or fallback to github.token
+          echo "${{ secrets.registry_token || github.token }}" | podman login ${{ inputs.registry }} -u ${{ github.actor }} --password-stdin
+
+      - name: Push image to Container Registry
+        run: podman push ${{ env.IMAGE_REFERENCE }}

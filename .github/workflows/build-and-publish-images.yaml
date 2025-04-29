@@ -1,0 +1,29 @@
+name: Build Rocky Linux 9 container image
+
+on:
+  push:
+    branches:
+      - main
+      - build_image
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-buildkit:
+    uses: ./.github/workflows/podman-build-and-publish.yml
+    with:
+      image_name: 'buildkit'
+      image_tag: 'latest'
+      containerfile: 'buildkit/Containerfile'
+      platforms: 'linux/amd64'
+
+  build-os:
+    uses: ./.github/workflows/podman-build-and-publish.yml
+    needs: build-buildkit
+    with:
+      image_name: 'rockylinux'
+      image_tag: '9-minimal'
+      containerfile: 'os/Containerfile'
+      build_arg_file: 'os/rocky-linux-9-minimal.conf'
+      platforms: 'linux/amd64'
