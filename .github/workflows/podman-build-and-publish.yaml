@@ -58,6 +58,11 @@ jobs:
       - name: Set up full image reference
         run: echo "IMAGE_REFERENCE=${{ inputs.registry }}/${{ inputs.registry_path }}/${{ inputs.image_name }}:${{ inputs.image_tag }}" >> $GITHUB_ENV
 
+      - name: Login to Container Registry
+        run: |
+          # Use provided token or fallback to github.token
+          echo "${{ secrets.registry_token || github.token }}" | podman login ${{ inputs.registry }} -u ${{ github.actor }} --password-stdin
+
       - name: Build container image
         run: |
           BUILD_COMMAND="podman buildx build \
@@ -76,11 +81,6 @@ jobs:
           fi
           
           eval "${BUILD_COMMAND}"
-
-      - name: Login to Container Registry
-        run: |
-          # Use provided token or fallback to github.token
-          echo "${{ secrets.registry_token || github.token }}" | podman login ${{ inputs.registry }} -u ${{ github.actor }} --password-stdin
 
       - name: Push image to Container Registry
         run: podman push ${{ env.IMAGE_REFERENCE }}
