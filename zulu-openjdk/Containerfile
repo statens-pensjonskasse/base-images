@@ -1,0 +1,23 @@
+ARG BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal
+FROM ${BASE_IMAGE}
+
+ARG JAVA_PACKAGE=zulu21-ca-jdk-headless
+ARG PACKAGE_MANAGER=microdnf
+ARG PACKAGE_MANAGER_FLAGS="--assumeyes --nodocs --setopt=install_weak_deps=0"
+ARG JAVA_HOME=/usr/lib/jvm/zulu21
+
+RUN ${PACKAGE_MANAGER} ${PACKAGE_MANAGER_FLAGS} install \
+    ${JAVA_PACKAGE} && \
+    ${PACKAGE_MANAGER} clean all && \
+    rm -rf /var/cache/yum
+
+ENV JAVA_HOME=${JAVA_HOME}
+
+# Change truststore to include SPK root CA
+RUN rm -f ${JAVA_HOME}/lib/security/cacerts && \
+    ln -s /etc/pki/java/cacerts ${JAVA_HOME}/lib/security/cacerts
+
+RUN adduser app
+
+USER app
+WORKDIR /home/app

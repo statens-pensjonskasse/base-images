@@ -13,6 +13,9 @@ jobs:
   build-buildkit:
     uses: ./.github/workflows/podman-build-and-publish.yaml
     secrets: inherit
+    permissions:
+      contents: read
+      packages: write
     with:
       image_name: 'buildkit'
       image_tag: 'latest'
@@ -23,9 +26,40 @@ jobs:
     uses: ./.github/workflows/podman-build-and-publish.yaml
     needs: build-buildkit
     secrets: inherit
+    permissions:
+      contents: read
+      packages: write
     with:
       image_name: 'rockylinux'
       image_tag: '9-minimal'
       containerfile: 'os/Containerfile'
-      build_arg_file: 'os/rocky-linux-9-minimal.conf'
+      build_arg_file: 'os/zulu-openjdk-17-jdk.conf'
+      platforms: 'linux/amd64'
+
+  build-zulu-openjdk-21-jdk:
+    uses: ./.github/workflows/podman-build-and-publish.yaml
+    needs: build-os
+    secrets: inherit
+    permissions:
+      contents: read
+      packages: write
+    with:
+      image_name: 'zulu-openjdk'
+      image_tag: '21-jdk'
+      containerfile: 'zulu-openjdk/Containerfile'
+      build_arg_file: 'zulu-openjdk/zulu-openjdk-21-jdk.conf'
+      platforms: 'linux/amd64'
+
+  build-zulu-openjdk-21-jre:
+    uses: ./.github/workflows/podman-build-and-publish.yaml
+    needs: build-os
+    secrets: inherit
+    permissions:
+      contents: read
+      packages: write
+    with:
+      image_name: 'zulu-openjdk'
+      image_tag: '21-jre'
+      containerfile: 'zulu-openjdk/Containerfile'
+      build_arg_file: 'zulu-openjdk/zulu-openjdk-21-jre.conf'
       platforms: 'linux/amd64'
