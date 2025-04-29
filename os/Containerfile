@@ -7,7 +7,7 @@ ARG TARGETARCH
 ARG OS_VERSION=9
 
 ARG PACKAGE_MANAGER=microdnf
-ARG PACKAGE_MANAGER_FLAGS="-y --nodocs"
+ARG PACKAGE_MANAGER_FLAGS="--assumeyes --nodocs --setopt=install_weak_deps=0"
 
 ENV TZ=Europe/Oslo
 RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && \
