@@ -24,10 +24,10 @@ jobs:
           with:
             fetch-depth: 0
 
-        - name: Build with Docker BuildKit
+        - name: Build with Docker
           run: |
-            docker buildx bake \
+            docker build \
               -f buildkit/Dockerfile \
-              --set=*.attest=type=sbom \
-              --set=*.attest=type=provenance,mode=max \
-              --set=*.output=type=registry,oci-mediatypes=true,oci-artifact=true
+              --sbom=true \
+              --output=type=registry,oci-mediatypes=true,oci-artifact=true \
+              --tag ghcr.io/statens-pensjonskasse/buildkit:spk
