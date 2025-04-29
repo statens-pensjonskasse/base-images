@@ -31,7 +31,7 @@ jobs:
               --build-arg-file os/rocky-linux-9-minimal.conf \
               --sbom=true \
               --tag ghcr.io/statens-pensjonskasse/rockylinux:9-minimal \
-              --platform linux/amd64,linux/arm64
+              --platform linux/amd64
 
         - name: Push to GitHub Container Registry
           run: |

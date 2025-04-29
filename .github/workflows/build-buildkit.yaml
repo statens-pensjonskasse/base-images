@@ -30,7 +30,7 @@ jobs:
               --file buildkit/Containerfile \
               --sbom=true \
               --tag ghcr.io/statens-pensjonskasse/buildkit:spk \
-              --platform linux/amd64,linux/arm64
+              --platform linux/amd64
 
         - name: Push to GitHub Container Registry
           run: |
