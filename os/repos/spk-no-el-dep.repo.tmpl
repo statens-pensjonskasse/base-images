@@ -1,0 +1,8 @@
+# For docker tilgjengeliggjør vi stage 2-test. Til forskjell fra langtlevende servere der vi installerer
+# nyere versjoner på kjørende server og må stage fra servere i test til servere i prod, vil testing av releaser skje
+# i docker-applikasjonen og produksjonssetting av rpm'er skjer sammen med at applikasjonen promoteres videre til prod
+[spk-no-el-dep]
+name=SPK yum repo (Team Applikasjonsplattform)
+baseurl=https://yum.spk.no/pub/yum-repos/2-test/spk-no-el-dep/
+gpgcheck=0
+enabled=1

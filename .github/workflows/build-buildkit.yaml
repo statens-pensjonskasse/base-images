@@ -1,0 +1,33 @@
+name: Build BuildKit container image
+
+on:
+  push:
+    branches:
+      - main
+      - build_image
+  pull_request:
+    branches:
+      - main
+
+jobs:
+    build-and-publish:
+      name: Build BuildKit container image
+      runs-on: self-hosted
+      permissions:
+        contents: read
+        packages: write
+      env:
+        TZ: Europe/Oslo
+      steps:
+        - name: Checkout
+          uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
+          with:
+            fetch-depth: 0
+
+        - name: Build with Docker BuildKit
+          run: |
+            docker buildx bake \
+              -f buildkit/Dockerfile \
+              --set=*.attest=type=sbom \
+              --set=*.attest=type=provenance,mode=max \
+              --set=*.output=type=registry,oci-mediatypes=true,oci-artifact=true
