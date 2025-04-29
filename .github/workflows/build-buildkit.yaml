@@ -26,9 +26,13 @@ jobs:
 
         - name: Build with Docker
           run: |
-            docker buildx build \
+            podman buildx build \
               --file buildkit/Containerfile \
               --sbom=true \
               --tag ghcr.io/statens-pensjonskasse/buildkit:spk \
-              --push \
               --platform linux/amd64,linux/arm64
+
+        - name: Push to GitHub Container Registry
+          run: |
+            podman push \
+              ghcr.io/statens-pensjonskasse/buildkit:spk
