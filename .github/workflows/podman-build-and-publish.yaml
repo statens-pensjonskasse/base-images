@@ -27,6 +27,10 @@ on:
         description: 'Path to build argument file'
         type: string
         required: false
+      build_args:
+        description: 'List of build arguments in KEY=VALUE format (comma-separated)'
+        type: string
+        required: false
       platforms:
         description: 'Comma-separated list of platforms to build for'
         type: string
@@ -69,17 +73,25 @@ jobs:
             --file ${{ inputs.containerfile }} \
             --tag ${{ env.IMAGE_REFERENCE }} \
             --platform ${{ inputs.platforms }}"
-          
+
           # Add build arg file if provided
           if [ -n "${{ inputs.build_arg_file }}" ]; then
             BUILD_COMMAND="${BUILD_COMMAND} --build-arg-file ${{ inputs.build_arg_file }}"
           fi
-          
+
+          # Add individual build args if provided
+          if [ -n "${{ inputs.build_args }}" ]; then
+            IFS=',' read -ra ARGS <<< "${{ inputs.build_args }}"
+            for arg in "${ARGS[@]}"; do
+              BUILD_COMMAND="${BUILD_COMMAND} --build-arg ${arg}"
+            done
+          fi
+
           # Add SBOM generation if enabled
           if [ "${{ inputs.sbom }}" == "true" ]; then
             BUILD_COMMAND="${BUILD_COMMAND} --sbom=true"
           fi
-          
+
           eval "${BUILD_COMMAND}"
 
       - name: Push image to Container Registry

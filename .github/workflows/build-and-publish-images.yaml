@@ -33,7 +33,7 @@ jobs:
       image_name: 'rockylinux'
       image_tag: '9-minimal'
       containerfile: 'rocky-linux/Containerfile'
-      build_arg_file: 'rocky-linux/rocky-linux-9-minimal.conf'
+      build_args: 'BASE_IMAGE=cr.spk.no/docker-hub/rockylinux:9-minimal'
       platforms: 'linux/amd64'
 
   build-zulu-openjdk-21-jdk:
@@ -47,7 +47,7 @@ jobs:
       image_name: 'zulu-openjdk'
       image_tag: '21-jdk'
       containerfile: 'zulu-openjdk/Containerfile'
-      build_arg_file: 'zulu-openjdk/zulu-openjdk-21-jdk.conf'
+      build_args: 'BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal, JAVA_VERSION=21, JAVA_TYPE=jdk'
       platforms: 'linux/amd64'
 
   build-zulu-openjdk-21-jre:
@@ -61,7 +61,7 @@ jobs:
       image_name: 'zulu-openjdk'
       image_tag: '21-jre'
       containerfile: 'zulu-openjdk/Containerfile'
-      build_arg_file: 'zulu-openjdk/zulu-openjdk-21-jre.conf'
+      build_args: 'BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal, JAVA_VERSION=21, JAVA_TYPE=jre'
       platforms: 'linux/amd64'
 
   build-maven-3-9-9-zulu-openjdk-21:
@@ -75,5 +75,5 @@ jobs:
       image_name: 'maven'
       image_tag: '3.9.9-zulu-openjdk-21'
       containerfile: 'maven/Containerfile'
-      build_arg_file: 'maven/maven-3.9.9-zulu-openjdk-21.conf'
+      build_args: 'BASE_IMAGE=ghcr.io/statens-pensjonskasse/zulu-openjdk:21-jdk, MAVEN_VERSION=3.9.9'
       platforms: 'linux/amd64'
