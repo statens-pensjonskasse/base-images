@@ -35,4 +35,5 @@ jobs:
         - name: Push to GitHub Container Registry
           run: |
             podman push \
+              --authfile ~/.docker/config.json \
               ghcr.io/statens-pensjonskasse/buildkit:spk
