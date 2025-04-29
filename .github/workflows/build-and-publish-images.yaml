@@ -4,13 +4,9 @@ on:
   push:
     branches:
       - main
-      - build_image
-  pull_request:
-    branches:
-      - main
 
 jobs:
-  build-buildkit:
+  buildkit:
     uses: ./.github/workflows/podman-build-and-publish.yaml
     secrets: inherit
     permissions:
@@ -22,9 +18,9 @@ jobs:
       containerfile: 'buildkit/Containerfile'
       platforms: 'linux/amd64'
 
-  build-rocky-linux-9-minimal:
+  rocky-linux-9-minimal:
     uses: ./.github/workflows/podman-build-and-publish.yaml
-    needs: build-buildkit
+    needs: buildkit
     secrets: inherit
     permissions:
       contents: read
@@ -36,9 +32,9 @@ jobs:
       build_args: 'BASE_IMAGE=cr.spk.no/docker-hub/rockylinux:9-minimal'
       platforms: 'linux/amd64'
 
-  build-zulu-openjdk-21-jdk:
+  zulu-openjdk-21-jdk:
     uses: ./.github/workflows/podman-build-and-publish.yaml
-    needs: build-rocky-linux-9-minimal
+    needs: rocky-linux-9-minimal
     secrets: inherit
     permissions:
       contents: read
@@ -50,9 +46,9 @@ jobs:
       build_args: 'BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal, JAVA_VERSION=21, JAVA_TYPE=jdk'
       platforms: 'linux/amd64'
 
-  build-zulu-openjdk-21-jre:
+  zulu-openjdk-21-jre:
     uses: ./.github/workflows/podman-build-and-publish.yaml
-    needs: build-rocky-linux-9-minimal
+    needs: rocky-linux-9-minimal
     secrets: inherit
     permissions:
       contents: read
@@ -64,9 +60,9 @@ jobs:
       build_args: 'BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal, JAVA_VERSION=21, JAVA_TYPE=jre'
       platforms: 'linux/amd64'
 
-  build-maven-3-9-9-zulu-openjdk-21:
+  maven-3-9-9-zulu-openjdk-21:
     uses: ./.github/workflows/podman-build-and-publish.yaml
-    needs: build-zulu-openjdk-21-jdk
+    needs: zulu-openjdk-21-jdk
     secrets: inherit
     permissions:
       contents: read
