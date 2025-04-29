@@ -28,8 +28,8 @@ jobs:
           run: |
             docker buildx build \
               --file os/Containerfile \
-              --build-arg-file os/rocky-linux-9-minimal.conf
+              --build-arg-file os/rocky-linux-9-minimal.conf \
               --sbom=true \
-              --tag ghcr.io/statens-pensjonskasse/rockylinux:9-minimal
+              --tag ghcr.io/statens-pensjonskasse/rockylinux:9-minimal \
               --push \
               --platform linux/amd64,linux/arm64

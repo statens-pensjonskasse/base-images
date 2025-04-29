@@ -29,6 +29,6 @@ jobs:
             docker buildx build \
               --file buildkit/Containerfile \
               --sbom=true \
-              --tag ghcr.io/statens-pensjonskasse/buildkit:spk
+              --tag ghcr.io/statens-pensjonskasse/buildkit:spk \
               --push \
               --platform linux/amd64,linux/arm64
