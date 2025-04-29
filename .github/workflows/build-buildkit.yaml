@@ -26,7 +26,7 @@ jobs:
 
         - name: Build with Docker
           run: |
-            docker build \
+            docker buildx build \
               -f buildkit/Dockerfile \
               --sbom=true \
               --output=type=registry,oci-mediatypes=true,oci-artifact=true \
