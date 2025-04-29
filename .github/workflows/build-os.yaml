@@ -33,8 +33,10 @@ jobs:
               --tag ghcr.io/statens-pensjonskasse/rockylinux:9-minimal \
               --platform linux/amd64
 
+        - name: Login to GitHub Container Registry
+          run: |
+            echo "${{ github.token }}" | podman login ghcr.io -u ${{ github.actor }} --password-stdin
+
         - name: Push to GitHub Container Registry
           run: |
-            podman push \
-              --authfile ~/.docker/config.json \
-              ghcr.io/statens-pensjonskasse/rockylinux:9-minimal
+            podman push ghcr.io/statens-pensjonskasse/rockylinux:9-minimal
