@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - refactoring
 
 jobs:
   buildkit:
@@ -16,7 +17,7 @@ jobs:
       image_name: 'buildkit'
       image_tag: 'latest'
       containerfile: 'buildkit/Containerfile'
-      platforms: 'linux/amd64'
+      platforms: 'linux/amd64,linux/arm64'
 
   rocky-linux-9-minimal:
     uses: ./.github/workflows/podman-build-and-publish.yaml
@@ -30,7 +31,7 @@ jobs:
       image_tag: '9-minimal'
       containerfile: 'rocky-linux/Containerfile'
       build_args: 'BASE_IMAGE=cr.spk.no/docker-hub/rockylinux:9-minimal'
-      platforms: 'linux/amd64'
+      platforms: 'linux/amd64,linux/arm64'
 
   zulu-openjdk-21-jdk:
     uses: ./.github/workflows/podman-build-and-publish.yaml

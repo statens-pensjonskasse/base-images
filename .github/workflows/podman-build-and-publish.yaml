@@ -69,7 +69,7 @@ jobs:
 
       - name: Build container image
         run: |
-          BUILD_COMMAND="podman buildx build \
+          BUILD_COMMAND="podman build \
             --file ${{ inputs.containerfile }} \
             --tag ${{ env.IMAGE_REFERENCE }} \
             --platform ${{ inputs.platforms }}"
