@@ -59,6 +59,10 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Set up QEMU for multi-platform builds
+        run: |
+          podman run --rm --privileged cr.spk.no/docker-hub/multiarch/qemu-user-static --reset -p yes
+
       - name: Set up full image reference
         run: echo "IMAGE_REFERENCE=${{ inputs.registry }}/${{ inputs.registry_path }}/${{ inputs.image_name }}:${{ inputs.image_tag }}" >> $GITHUB_ENV
 

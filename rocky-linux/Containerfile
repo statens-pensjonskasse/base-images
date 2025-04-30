@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=rockylinux:9-minimal
+ARG BASE_IMAGE=cr.spk.no/docker-hub/rockylinux:9-minimal
 FROM ${BASE_IMAGE}
 
 # Magical variable that is set to amd64 for linux/amd64 platform and arm64 for linux/arm64 platform

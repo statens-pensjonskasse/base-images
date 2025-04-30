@@ -7,8 +7,6 @@ ARG EXTRA_PACKAGES=""
 
 USER root
 
-COPY maven-settings/settings.xml /opt/maven-settings/
-
 RUN ${PACKAGE_MANAGER} install -y \
     tar \
     git \
