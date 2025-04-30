@@ -69,7 +69,7 @@ jobs:
 
       - name: Build container image
         run: |
-          podman manifest create ${{ env.IMAGE_REFERENCE }}
+          podman manifest create ${{ env.IMAGE_REFERENCE }} --replace
           
           BUILD_COMMAND="podman build \
             --file ${{ inputs.containerfile }} \
