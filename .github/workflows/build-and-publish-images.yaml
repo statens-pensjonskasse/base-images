@@ -32,7 +32,7 @@ jobs:
       image_tag: '21-jdk'
       containerfile: 'zulu-openjdk/Containerfile'
       build_args: 'BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal, JAVA_VERSION=21, JAVA_TYPE=jdk'
-      platforms: 'linux/amd64'
+      platforms: 'linux/amd64,linux/arm64'
 
   zulu-openjdk-21-jre:
     uses: ./.github/workflows/podman-build-and-publish.yaml
@@ -46,7 +46,7 @@ jobs:
       image_tag: '21-jre'
       containerfile: 'zulu-openjdk/Containerfile'
       build_args: 'BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal, JAVA_VERSION=21, JAVA_TYPE=jre'
-      platforms: 'linux/amd64'
+      platforms: 'linux/amd64,linux/arm64'
 
   maven-3-9-9-zulu-openjdk-21:
     uses: ./.github/workflows/podman-build-and-publish.yaml
@@ -60,4 +60,4 @@ jobs:
       image_tag: '3.9.9-zulu-openjdk-21'
       containerfile: 'maven/Containerfile'
       build_args: 'BASE_IMAGE=ghcr.io/statens-pensjonskasse/zulu-openjdk:21-jdk, MAVEN_VERSION=3.9.9'
-      platforms: 'linux/amd64'
+      platforms: 'linux/amd64,linux/arm64'

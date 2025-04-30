@@ -69,9 +69,11 @@ jobs:
 
       - name: Build container image
         run: |
+          podman manifest create ${{ env.IMAGE_REFERENCE }}
+          
           BUILD_COMMAND="podman build \
             --file ${{ inputs.containerfile }} \
-            --tag ${{ env.IMAGE_REFERENCE }} \
+            --manifest ${{ env.IMAGE_REFERENCE }} \
             --platform ${{ inputs.platforms }}"
 
           # Add build arg file if provided
@@ -95,4 +97,4 @@ jobs:
           eval "${BUILD_COMMAND}"
 
       - name: Push image to Container Registry
-        run: podman push ${{ env.IMAGE_REFERENCE }}
+        run: podman manifest push ${{ env.IMAGE_REFERENCE }}
