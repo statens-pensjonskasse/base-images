@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - refactoring
 
 jobs:
   rocky-linux-9-minimal:
@@ -18,7 +17,8 @@ jobs:
       image_tag: '9-minimal'
       containerfile: 'rocky-linux/Containerfile'
       build_args: 'BASE_IMAGE=cr.spk.no/docker-hub/rockylinux:9-minimal'
-      platforms: 'linux/amd64,linux/arm64'
+      platforms: 'linux/amd64'
+      description: 'Rocky Linux 9 minimal container image for SPK'
 
   zulu-openjdk-21-jdk:
     uses: ./.github/workflows/podman-build-and-publish.yaml
@@ -32,7 +32,8 @@ jobs:
       image_tag: '21-jdk'
       containerfile: 'zulu-openjdk/Containerfile'
       build_args: 'BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal, JAVA_VERSION=21, JAVA_TYPE=jdk'
-      platforms: 'linux/amd64,linux/arm64'
+      platforms: 'linux/amd64'
+      description: 'Java 21 JDK (Zulu OpenJDK) container image based on Rocky Linux 9 minimal for SPK'
 
   zulu-openjdk-21-jre:
     uses: ./.github/workflows/podman-build-and-publish.yaml
@@ -46,7 +47,8 @@ jobs:
       image_tag: '21-jre'
       containerfile: 'zulu-openjdk/Containerfile'
       build_args: 'BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal, JAVA_VERSION=21, JAVA_TYPE=jre'
-      platforms: 'linux/amd64,linux/arm64'
+      platforms: 'linux/amd64'
+      description: 'Java 21 JRE (Zulu OpenJDK) container image based on Rocky Linux 9 minimal for SPK'
 
   maven-3-9-9-zulu-openjdk-21:
     uses: ./.github/workflows/podman-build-and-publish.yaml
@@ -60,4 +62,5 @@ jobs:
       image_tag: '3.9.9-zulu-openjdk-21'
       containerfile: 'maven/Containerfile'
       build_args: 'BASE_IMAGE=ghcr.io/statens-pensjonskasse/zulu-openjdk:21-jdk, MAVEN_VERSION=3.9.9'
-      platforms: 'linux/amd64,linux/arm64'
+      platforms: 'linux/amd64'
+      description: 'Maven 3.9.9 container image based on Zulu OpenJDK 21 for SPK and Rocky Linux 9 minimal'
