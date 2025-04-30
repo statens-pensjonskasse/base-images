@@ -7,21 +7,8 @@ on:
       - refactoring
 
 jobs:
-  buildkit:
-    uses: ./.github/workflows/podman-build-and-publish.yaml
-    secrets: inherit
-    permissions:
-      contents: read
-      packages: write
-    with:
-      image_name: 'buildkit'
-      image_tag: 'latest'
-      containerfile: 'buildkit/Containerfile'
-      platforms: 'linux/amd64,linux/arm64'
-
   rocky-linux-9-minimal:
     uses: ./.github/workflows/podman-build-and-publish.yaml
-    needs: buildkit
     secrets: inherit
     permissions:
       contents: read
