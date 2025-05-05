@@ -39,6 +39,10 @@ on:
         description: 'Generate Software Bill of Materials'
         type: boolean
         default: true
+      description:
+        description: 'Description for the image'
+        type: string
+        required: false
     secrets:
       registry_token:
         description: 'Token for registry authentication'
@@ -69,11 +73,22 @@ jobs:
 
       - name: Build container image
         run: |
-          BUILD_COMMAND="podman buildx build \
+          podman image rm ${{ env.IMAGE_REFERENCE }} || true
+          podman manifest rm ${{ env.IMAGE_REFERENCE }} || true
+          podman manifest create ${{ env.IMAGE_REFERENCE }}
+          
+          BUILD_COMMAND="podman build \
             --file ${{ inputs.containerfile }} \
-            --tag ${{ env.IMAGE_REFERENCE }} \
-            --platform ${{ inputs.platforms }}"
-
+            --manifest ${{ env.IMAGE_REFERENCE }} \
+            --platform ${{ inputs.platforms }} \
+            --annotation 'org.opencontainers.image.revision=${{ github.sha }}' \
+            --annotation 'org.opencontainers.image.created=$(date -u +%Y-%m-%dT%H:%M:%SZ)' \
+            --annotation 'org.opencontainers.image.url=${{ github.server_url }}/${{ github.repository }}'"
+          
+          if [ -n "${{ inputs.description }}" ]; then
+            BUILD_COMMAND="${BUILD_COMMAND} --annotation 'org.opencontainers.image.description=${{ inputs.description }}'"
+          fi
+           
           # Add build arg file if provided
           if [ -n "${{ inputs.build_arg_file }}" ]; then
             BUILD_COMMAND="${BUILD_COMMAND} --build-arg-file ${{ inputs.build_arg_file }}"
@@ -92,7 +107,8 @@ jobs:
             BUILD_COMMAND="${BUILD_COMMAND} --sbom=true"
           fi
 
+          echo "${BUILD_COMMAND}"
           eval "${BUILD_COMMAND}"
 
       - name: Push image to Container Registry
-        run: podman push ${{ env.IMAGE_REFERENCE }}
+        run: podman manifest push ${{ env.IMAGE_REFERENCE }}

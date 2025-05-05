@@ -31,11 +31,3 @@ Based on the previous Zulu OpenJDK JDK images.
 Only Maven 3.9.9 with Java 21 is supported.
 
 Available version: `3.9.9-zulu-openjdk-21`
-
-## 🛠️ BuildKit
-
-Based on the latest `moby/buildkit` image.
-Used as a buildkit builder for building images.
-We add internal SPK root CA certificates.
-
-Available version: `latest`

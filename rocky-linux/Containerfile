@@ -1,11 +1,9 @@
-ARG BASE_IMAGE=rockylinux:9-minimal
+ARG BASE_IMAGE=cr.spk.no/docker-hub/rockylinux:9-minimal
 FROM ${BASE_IMAGE}
 
 # Magical variable that is set to amd64 for linux/amd64 platform and arm64 for linux/arm64 platform
 ARG TARGETARCH
-
 ARG OS_VERSION=9
-
 ARG PACKAGE_MANAGER=microdnf
 ARG PACKAGE_MANAGER_FLAGS="--assumeyes --nodocs --setopt=install_weak_deps=0"
 
@@ -22,24 +20,19 @@ RUN update-ca-trust extract
 RUN sed -i '/^mirrorlist/d' /etc/yum.repos.d/*.repo && \
     sed -i 's/^#baseurl/baseurl/' /etc/yum.repos.d/*.repo
 
-# Evaluate templates for internal yum repositories
-RUN --mount=type=bind,src=repos/docker.repo.tmpl,dst=/tmp/docker.repo.tmpl \
-    --mount=type=bind,src=repos/microsoft.repo.tmpl,dst=/tmp/microsoft.repo.tmpl \
-    --mount=type=bind,src=repos/spk.repo.tmpl,dst=/tmp/spk.repo.tmpl \
-    --mount=type=bind,src=repos/spk-epel.repo.tmpl,dst=/tmp/spk-epel.repo.tmpl \
-    --mount=type=bind,src=repos/spk-no-el-dep.repo.tmpl,dst=/tmp/spk-no-el-dep.repo.tmpl \
-    --mount=type=bind,src=repos/zulu-openjdk.repo.tmpl,dst=/tmp/zulu-openjdk.repo.tmpl \
-    if [ "${TARGETARCH}" = "amd64" ]; then ARCH=x86_64; \
-    elif [ "${TARGETARCH}" = "arm64" ]; then ARCH=aarch64 ; \
-    else echo "Målarkitektur '${TARGETARCH}' er ikke støttet" && exit 1; \
+# Evaluate templates for internal Yum repositories
+RUN --mount=type=bind,src=repos,dst=/tmp/repos \
+    if [ "${TARGETARCH}" = "amd64" ]; then \
+      ARCH=x86_64; \
+    elif [ "${TARGETARCH}" = "arm64" ]; then \
+      ARCH=aarch64 ; \
+    else \
+        echo "Error: Target architecture '${TARGETARCH}' is not supported" && \
+        exit 1; \
     fi; \
-    OS_VERSION="${OS_VERSION}"; \
-    eval "echo \"$(cat /tmp/docker.repo.tmpl)\"" > /etc/yum.repos.d/docker-el${OS_VERSION}.repo; \
-    eval "echo \"$(cat /tmp/microsoft.repo.tmpl)\"" > /etc/yum.repos.d/microsoft-el${OS_VERSION}.repo; \
-    eval "echo \"$(cat /tmp/spk.repo.tmpl)\"" > /etc/yum.repos.d/spk-el${OS_VERSION}.repo; \
-    eval "echo \"$(cat /tmp/spk-epel.repo.tmpl)\"" > /etc/yum.repos.d/spk-epel${OS_VERSION}.repo; \
-    eval "echo \"$(cat /tmp/spk-no-el-dep.repo.tmpl)\"" > /etc/yum.repos.d/spk-no-el-dep.repo; \
-    eval "echo \"$(cat /tmp/zulu-openjdk.repo.tmpl)\"" > /etc/yum.repos.d/zulu-openjdk.repo;
+    for REPO in /tmp/repos/*; do \
+        eval "echo \"$(cat ${REPO})\"" > /etc/yum.repos.d/$(basename ${REPO} .tmpl); \
+    done;
 
 RUN ${PACKAGE_MANAGER} ${PACKAGE_MANAGER_FLAGS} update && \
     ${PACKAGE_MANAGER} clean all && \
