@@ -64,3 +64,33 @@ jobs:
       build_args: 'BASE_IMAGE=ghcr.io/statens-pensjonskasse/zulu-openjdk:21-jdk, MAVEN_VERSION=3.9.9'
       platforms: 'linux/amd64'
       description: 'Maven 3.9.9 container image based on Zulu OpenJDK 21 for SPK and Rocky Linux 9 minimal'
+
+  python-3-9:
+    uses: ./.github/workflows/podman-build-and-publish.yaml
+    needs: rocky-linux-9-minimal
+    secrets: inherit
+    permissions:
+      contents: read
+      packages: write
+    with:
+      image_name: python
+      image_tag: 3.9
+      containerfile: python/Containerfile
+      build_args: BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal, PYTHON_VERSION=3.9
+      platforms: linux/amd64
+      description: Python 3.9 container image based on Rocky Linux 9 minimal for SPK
+
+  python-3-11:
+    uses: ./.github/workflows/podman-build-and-publish.yaml
+    needs: rocky-linux-9-minimal
+    secrets: inherit
+    permissions:
+      contents: read
+      packages: write
+    with:
+      image_name: python
+      image_tag: 3.11
+      containerfile: python/Containerfile
+      build_args: BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal, PYTHON_VERSION=3.11
+      platforms: linux/amd64
+      description: Python 3.11 container image based on Rocky Linux 9 minimal for SPK
