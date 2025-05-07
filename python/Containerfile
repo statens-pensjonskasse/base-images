@@ -1,0 +1,30 @@
+ARG BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal
+FROM ${BASE_IMAGE}
+
+ARG PACKAGE_MANAGER=microdnf
+ARG PACKAGE_MANAGER_FLAGS='-y --nodocs'
+ARG PYTHON_VERSION=3.11
+
+# Installer Python
+# Inkluderer ODBC-driver for mssql, siden den er relativt liten og sannsynligvis nødvendig i flere prosjekter
+RUN ACCEPT_EULA=Y ${PACKAGE_MANAGER} ${PACKAGE_MANAGER_FLAGS} install \
+    python${PYTHON_VERSION} \
+    python${PYTHON_VERSION}-pip \
+    msodbcsql18 \
+    && ${PACKAGE_MANAGER} clean all
+
+# Konfigurerer pip til å bruke cert-bundle fra base-os som inkludere SPK-certs
+RUN python${PYTHON_VERSION} -m pip config set global.cert /etc/pki/tls/certs/ca-bundle.crt
+
+# Legger til miljøvariabler som brukes av vanlige Python bibliotek for å finne cert-bundles
+ENV REQUESTS_CA_BUNDLE=/etc/pki/tls/certs/ca-bundle.crt \
+    SSL_CERT_FILE=/etc/pki/tls/certs/ca-bundle.crt
+
+# Installer Poetry så vi kan installere python deps
+RUN python${PYTHON_VERSION} -m pip install \
+    poetry
+
+# Opprett app-bruker
+RUN groupadd -g 10000 app && useradd -m -g app -u 10000 app
+USER app
+WORKDIR /home/app
