@@ -35,5 +35,12 @@ RUN --mount=type=bind,src=repos,dst=/tmp/repos \
     done;
 
 RUN ${PACKAGE_MANAGER} ${PACKAGE_MANAGER_FLAGS} update && \
+    ${PACKAGE_MANAGER} ${PACKAGE_MANAGER_FLAGS} install \
+    glibc-langpack-en && \
     ${PACKAGE_MANAGER} clean all && \
     rm -rf /var/cache/yum
+
+# Set locale
+ENV LANG=en_US.UTF-8 \
+    LANGUAGE=en_US:en \
+    LC_ALL=en_US.UTF-8
