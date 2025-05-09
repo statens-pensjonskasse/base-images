@@ -1,0 +1,41 @@
+ARG BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal
+FROM ${BASE_IMAGE}
+
+ARG NODE_VERSION=24
+ARG NPM_VERSION=11
+ARG PACKAGE_MANAGER=microdnf
+ARG PACKAGE_MANAGER_FLAGS='--assumeyes --nodocs --setopt=install_weak_deps=0'
+ARG INSTALL_PACKAGES='nodejs curl'
+ARG ADDITIONAL_PACKAGES=''
+ARG NODE_OPTIONS='--use-openssl-ca'
+ARG SSL_CERT_FILE='/etc/pki/tls/certs/ca-bundle.crt'
+
+ENV NODE_OPTIONS=${NODE_OPTIONS}
+ENV SSL_CERT_FILE=${SSL_CERT_FILE}
+ENV BUILD_DIR=${BUILD_DIR}
+
+# Magisk variabel som blir satt til amd64 for linux/amd64 platform og arm64 for linux/arm64 platform
+ARG TARGETARCH
+
+# Genererer yum-repo-fil basert på en template med placeholdere for Node-versjon og arch
+# tilpasset fra https://github.com/nodesource/distributions/tree/master/scripts/rpm
+RUN --mount=type=bind,source=repos/nodesource-nodejs.repo.tmpl,target=/tmp/nodesource-nodejs.repo.tmpl \
+    if [ "${TARGETARCH}" = "amd64" ]; then ARCH=x86_64; \
+    elif [ "${TARGETARCH}" = "arm64" ]; then ARCH=aarch64 ; \
+    else echo "Målarkitektur '${TARGETARCH}' er ikke støttet" && exit 1; \
+    fi; \
+    # Injiserer NODE_VERSION og ARCH i repo-template her
+    eval "echo \"$(cat /tmp/nodesource-nodejs.repo.tmpl)\"" > "/etc/yum.repos.d/nodesource-nodejs.repo"
+
+# Installer pakker
+RUN ${PACKAGE_MANAGER} module disable -y nodejs && \
+    ${PACKAGE_MANAGER} ${PACKAGE_MANAGER_FLAGS} install \
+    ${INSTALL_PACKAGES} \
+    ${ADDITIONAL_PACKAGES} && \
+    ${PACKAGE_MANAGER} clean all && \
+    npm install -g npm@${NPM_VERSION}
+
+RUN adduser app
+
+USER app
+WORKDIR /home/app
