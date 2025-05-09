@@ -6,6 +6,8 @@ ARG JAVA_TYPE=jdk
 ARG PACKAGE_MANAGER=microdnf
 ARG PACKAGE_MANAGER_FLAGS="--assumeyes --nodocs --setopt=install_weak_deps=0"
 
+USER root
+
 RUN ${PACKAGE_MANAGER} ${PACKAGE_MANAGER_FLAGS} install \
     zulu${JAVA_VERSION}-ca-${JAVA_TYPE}-headless && \
     ${PACKAGE_MANAGER} clean all && \
@@ -17,7 +19,4 @@ ENV JAVA_HOME=/usr/lib/jvm/zulu${JAVA_VERSION}
 RUN rm -f ${JAVA_HOME}/lib/security/cacerts && \
     ln -s /etc/pki/java/cacerts ${JAVA_HOME}/lib/security/cacerts
 
-RUN adduser app
-
 USER app
-WORKDIR /home/app

@@ -5,6 +5,8 @@ ARG PACKAGE_MANAGER=microdnf
 ARG PACKAGE_MANAGER_FLAGS='-y --nodocs'
 ARG PYTHON_VERSION=3.11
 
+USER root
+
 # Installer Python
 # Inkluderer ODBC-driver for mssql, siden den er relativt liten og sannsynligvis nødvendig i flere prosjekter
 RUN ACCEPT_EULA=Y ${PACKAGE_MANAGER} ${PACKAGE_MANAGER_FLAGS} install \
@@ -24,8 +26,4 @@ ENV REQUESTS_CA_BUNDLE=/etc/pki/tls/certs/ca-bundle.crt \
 RUN python${PYTHON_VERSION} -m pip install \
     poetry
 
-# Opprett app-bruker
-RUN adduser app
-
 USER app
-WORKDIR /home/app
