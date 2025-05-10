@@ -31,3 +31,22 @@ Based on the previous Zulu OpenJDK JDK images.
 Only Maven 3.9.9 with Java 21 is supported.
 
 Available version: `3.9.9-zulu-openjdk-21`
+
+## 🟩 Node.js
+
+Based on the Rocky Linux 9 minimal images.
+
+We provide two versions of this image:
+
+* Standard image with Node.js and npm
+* Builder image with additional development packages including git, gcc-c++,
+  and GUI-related dependencies for headless browser testing
+
+Available versions: `24`, `24-builder`
+
+## 🐍 Python
+
+Based on the Rocky Linux 9 minimal images.
+Includes the specified Python version with pip, MSSQL ODBC driver, and Poetry for dependency management.
+
+Available versions: `3.9`, `3.11`
