@@ -25,6 +25,7 @@ RUN python${PYTHON_VERSION} -m pip install \
     poetry
 
 # Opprett app-bruker
-RUN groupadd -g 10000 app && useradd -m -g app -u 10000 app
+RUN adduser app
+
 USER app
 WORKDIR /home/app
