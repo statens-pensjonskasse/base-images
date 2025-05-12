@@ -50,7 +50,7 @@ on:
 
 jobs:
   build-and-publish:
-    runs-on: self-hosted
+    runs-on: spk-test-runner
     permissions:
       contents: read
       packages: write
