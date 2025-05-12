@@ -95,6 +95,41 @@ jobs:
       platforms: linux/amd64
       description: Python 3.11 container image based on Rocky Linux 9 minimal for SPK
 
+  nodejs-22:
+    uses: ./.github/workflows/podman-build-and-publish.yaml
+    needs: rocky-linux-9-minimal
+    secrets: inherit
+    permissions:
+      contents: read
+      packages: write
+    with:
+      image_name: nodejs
+      image_tag: 22
+      containerfile: nodejs/Containerfile
+      build_args: BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal, NODEJS_VERSION=22, NPM_VERSION=10
+      platforms: linux/amd64
+      description: Node.js 22 container image based on Rocky Linux 9 minimal for SPK
+
+  nodejs-22-builder:
+    uses: ./.github/workflows/podman-build-and-publish.yaml
+    needs: rocky-linux-9-minimal
+    secrets: inherit
+    permissions:
+      contents: read
+      packages: write
+    with:
+      image_name: nodejs
+      image_tag: 22-builder
+      containerfile: nodejs/Containerfile
+      build_args: |
+        BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal,
+        NODEJS_VERSION=22, 
+        NPM_VERSION=10, 
+        INSTALL_PACKAGES="nodejs curl git nss freetype harfbuzz gcc-c++ make bzip2", 
+        ADDITIONAL_PACKAGES="xorg-x11-server-Xvfb gtk2-devel gtk3-devel libnotify-devel GConf2 nss libXScrnSaver alsa-lib chromium"
+      platforms: linux/amd64
+      description: Node.js 22 container image based on Rocky Linux 9 minimal for SPK
+
   nodejs-24:
     uses: ./.github/workflows/podman-build-and-publish.yaml
     needs: rocky-linux-9-minimal
