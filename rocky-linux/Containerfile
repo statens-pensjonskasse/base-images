@@ -44,3 +44,8 @@ RUN ${PACKAGE_MANAGER} ${PACKAGE_MANAGER_FLAGS} update && \
 ENV LANG=en_US.UTF-8 \
     LANGUAGE=en_US:en \
     LC_ALL=en_US.UTF-8
+
+RUN adduser app
+
+USER app
+WORKDIR /home/app

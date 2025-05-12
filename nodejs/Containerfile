@@ -17,6 +17,8 @@ ENV BUILD_DIR=${BUILD_DIR}
 # Magisk variabel som blir satt til amd64 for linux/amd64 platform og arm64 for linux/arm64 platform
 ARG TARGETARCH
 
+USER root
+
 # Genererer yum-repo-fil basert på en template med placeholdere for Node-versjon og arch
 # tilpasset fra https://github.com/nodesource/distributions/tree/master/scripts/rpm
 RUN --mount=type=bind,source=repos/nodesource-nodejs.repo.tmpl,target=/tmp/nodesource-nodejs.repo.tmpl \
@@ -35,7 +37,4 @@ RUN ${PACKAGE_MANAGER} module disable -y nodejs && \
     ${PACKAGE_MANAGER} clean all && \
     npm install -g npm@${NPM_VERSION}
 
-RUN adduser app
-
 USER app
-WORKDIR /home/app
