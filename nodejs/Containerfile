@@ -1,7 +1,7 @@
 ARG BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal
 FROM ${BASE_IMAGE}
 
-ARG NODE_VERSION=24
+ARG NODEJS_VERSION=24
 ARG NPM_VERSION=11
 ARG PACKAGE_MANAGER=microdnf
 ARG PACKAGE_MANAGER_FLAGS='--assumeyes --nodocs --setopt=install_weak_deps=0'
@@ -26,7 +26,7 @@ RUN --mount=type=bind,source=repos/nodesource-nodejs.repo.tmpl,target=/tmp/nodes
     elif [ "${TARGETARCH}" = "arm64" ]; then ARCH=aarch64 ; \
     else echo "Målarkitektur '${TARGETARCH}' er ikke støttet" && exit 1; \
     fi; \
-    # Injiserer NODE_VERSION og ARCH i repo-template her
+    # Injiserer NODEJS_VERSION og ARCH i repo-template her
     eval "echo \"$(cat /tmp/nodesource-nodejs.repo.tmpl)\"" > "/etc/yum.repos.d/nodesource-nodejs.repo"
 
 # Installer pakker
