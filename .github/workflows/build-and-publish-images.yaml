@@ -1,4 +1,4 @@
-name: Build Rocky Linux 9 container image
+name: Build all SPK base images
 
 on:
   push:
@@ -123,9 +123,9 @@ jobs:
       containerfile: nodejs/Containerfile
       build_args: |
         BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal,
-        NODEJS_VERSION=22, 
-        NPM_VERSION=10, 
-        INSTALL_PACKAGES="nodejs curl git nss freetype harfbuzz gcc-c++ make bzip2", 
+        NODEJS_VERSION=22,
+        NPM_VERSION=10,
+        INSTALL_PACKAGES="nodejs curl git nss freetype harfbuzz gcc-c++ make bzip2",
         ADDITIONAL_PACKAGES="xorg-x11-server-Xvfb gtk2-devel gtk3-devel libnotify-devel GConf2 nss libXScrnSaver alsa-lib chromium"
       platforms: linux/amd64
       description: Node.js 22 container image based on Rocky Linux 9 minimal for SPK
@@ -158,9 +158,22 @@ jobs:
       containerfile: nodejs/Containerfile
       build_args: |
         BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal,
-        NODEJS_VERSION=24, 
-        NPM_VERSION=11, 
-        INSTALL_PACKAGES="nodejs curl git nss freetype harfbuzz gcc-c++ make bzip2", 
+        NODEJS_VERSION=24,
+        NPM_VERSION=11,
+        INSTALL_PACKAGES="nodejs curl git nss freetype harfbuzz gcc-c++ make bzip2",
         ADDITIONAL_PACKAGES="xorg-x11-server-Xvfb gtk2-devel gtk3-devel libnotify-devel GConf2 nss libXScrnSaver alsa-lib chromium"
       platforms: linux/amd64
       description: Node.js 24 container image based on Rocky Linux 9 minimal for SPK
+
+  php-mssql-8.3:
+    uses: ./.github/workflows/podman-build-and-publish.yaml
+    secrets: inherit
+    permissions:
+      contents: read
+      packages: write
+    with:
+      image_name: php-mssql
+      image_tag: 8.3
+      containerfile: php-mssql/Containerfile
+      platforms: linux/amd64
+      description: PHP 8.3 container image based on plain ubuntu 22.04

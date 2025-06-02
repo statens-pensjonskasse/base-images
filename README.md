@@ -50,3 +50,10 @@ Based on the Rocky Linux 9 minimal images.
 Includes the specified Python version with pip, MSSQL ODBC driver, and Poetry for dependency management.
 
 Available versions: `3.11`, `3.12`
+
+## 🐘 PHP
+
+Based on the plain ubuntu 22.04 image. Runs as non-root (User "app", uid 1000)
+Includes the specified PHP version with MSSQL ODBC driver.
+
+Available version: `8.3`

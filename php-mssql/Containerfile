@@ -1,0 +1,134 @@
+ARG BASE_IMAGE=ubuntu:22.04
+FROM ${BASE_IMAGE}
+ARG OS_VERSION=22.04
+ARG PHP_VERSION=8.3
+ARG ODBC_VERSION=18
+
+# Timezone
+RUN ln -sf /usr/share/zoneinfo/Europe/Oslo /etc/localtime
+
+# Kjører også upgrade siden dette er et baseimage
+# 90MB plass tar denne i imaget
+RUN apt-get update \
+    && apt-get -y upgrade \
+    && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        curl \
+        locales \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# locale
+RUN locale-gen en_US.UTF-8 && update-locale LANG=en_US.UTF-8
+ENV LANG='en_US.UTF-8'
+ENV LANGUAGE='en_US:en'
+ENV LC_ALL='en_US.UTF-8'
+
+# Henter gjeldende rotsertifikat fra yum-server
+ADD --chmod=644 https://yum.spk.no/pub/pki/spk-root-ca-current.pem /usr/local/share/ca-certificates/
+# Henter gammelt rotsertifikat hvis vi er i en overgangsperiode. Hvis ikke så er dette en symlink som peker til samme sertifikat som over.
+ADD --chmod=644 https://yum.spk.no/pub/pki/spk-root-ca-previous.pem /usr/local/share/ca-certificates/
+
+# Ubuntu krever at sertifikatene slutter med .crt og ikke .pem
+RUN for file in /usr/local/share/ca-certificates/*.pem ; do \
+        mv -v -- "$file" "${file%.pem}.crt" ; \
+    done
+
+# Installerer rotsertifikater
+RUN update-ca-certificates
+
+# Installere apt-repo for php og Microsoft
+# software-properties-common trengs bare for å installere apt-greier, og drar med seg masse
+# avhengigheter, som Python. Prøver å fjerne for å redusere image-størrelse
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends apt-transport-https curl gnupg2 software-properties-common \
+    && add-apt-repository ppa:ondrej/php -y \
+    && curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
+    && curl https://packages.microsoft.com/config/ubuntu/${OS_VERSION}/prod.list > /etc/apt/sources.list.d/mssql-release.list \
+    && cat /etc/apt/sources.list.d/mssql-release.list \
+    && apt-get remove -y software-properties-common \
+    && apt-get autoremove -y \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install mssql-support
+# 195MB plass i imaget tar denne linja
+RUN apt-get update \
+    && ACCEPT_EULA=Y apt-get install -y --no-install-recommends \
+        msodbcsql${ODBC_VERSION} \
+        unixodbc-dev \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install apache & PHP
+# php-mbstring kreves av phpunit
+# curl, git, php-zip og unzip kreves av composer
+# Denne bruker 201MB plass i imaget
+# Har splittet install av php og php-dev fra de andre fordi kombinert fikk vi en merkelig feil med pecl
+RUN apt-get update \
+    && apt-get install -y \
+        php${PHP_VERSION} \
+        php${PHP_VERSION}-dev \
+    && apt-get install -y \
+        apache2 \
+        libapache2-mod-php${PHP_VERSION} \
+        libmcrypt-dev \
+        php${PHP_VERSION}-curl \
+        php${PHP_VERSION}-mbstring \
+        php${PHP_VERSION}-xml \
+        php${PHP_VERSION}-zip \
+        php-pear \
+    && apt-get install -y --no-install-recommends curl git unzip \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Configure PHP
+RUN pecl install sqlsrv
+RUN pecl install pdo_sqlsrv
+RUN pecl install mcrypt
+RUN printf "; priority=20\nextension=sqlsrv.so\n" > /etc/php/${PHP_VERSION}/mods-available/sqlsrv.ini
+RUN printf "; priority=30\nextension=pdo_sqlsrv.so\n" > /etc/php/${PHP_VERSION}/mods-available/pdo_sqlsrv.ini
+RUN printf "; priority=30\nextension=mcrypt.so\n" > /etc/php/${PHP_VERSION}/mods-available/mcrypt.ini
+RUN phpenmod -v ${PHP_VERSION} sqlsrv pdo_sqlsrv mcrypt
+RUN update-alternatives --set php /usr/bin/php${PHP_VERSION}
+
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
+
+
+# configure apache
+RUN a2dismod mpm_event
+RUN a2enmod mpm_prefork
+RUN a2enmod php${PHP_VERSION}
+
+COPY resources/000-default.conf /etc/apache2/sites-available/
+COPY resources/ldap.conf /etc/apache2/mods-available/
+RUN a2enmod rewrite ldap authnz_ldap
+ENV APACHE_PID_FILE=${APACHE_RUNDIR}/httpd.pid
+RUN rm /var/www/html/index.html \
+    && sed -i 's/^Listen 80/Listen 8080/' /etc/apache2/ports.conf \
+    && sed -i 's#^ErrorLog .*#ErrorLog /proc/self/fd/2#' /etc/apache2/apache2.conf \
+    && sed -i "s/APACHE_RUN_USER=www-data/APACHE_RUN_USER=app/g" /etc/apache2/envvars \
+    && sed -i "s/APACHE_RUN_GROUP=www-data/APACHE_RUN_GROUP=app/g" /etc/apache2/envvars
+
+COPY resources/run.sh /run.sh
+
+# Add app user with uid 1000
+RUN useradd --uid 1000 app \
+    && chown -R app:app /var/log/apache2/ /var/run/apache2/
+
+EXPOSE 8080
+WORKDIR /var/www/html/
+
+# Default config. Overrides i compose-file eller med docker run
+ENV EXPOSE_SWARM_SECRETS=true
+ENV SERVER_NAME=base-php-mssql
+ENV DB_SERVER=kasper.utv.spk.no
+ENV DB_USER=topp
+ENV DB_DATABASE=kasper_ci_develop
+# Passord kan enten leses fra miljøvariabel DB_PASSWORD (usikkert, til bruk kun under utvikling) eller fra en fil ved å sette
+# DB_PASSWORD_FILE, til bruk f.eks. i swarm, der passordet hentes fra en secret, f.eks. /run/secrets/kasper_topp_password
+# DB_PASSWORD_FILE har presedens over DB_PASSWORD
+ENV DB_PASSWORD=Templet
+ENV DB_PASSWORD_FILE=""
+
+# Skal ikke kjøre som root
+USER app
+
+ENTRYPOINT [ "/run.sh" ]
