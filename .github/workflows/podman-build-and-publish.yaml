@@ -76,7 +76,7 @@ jobs:
           podman image rm ${{ env.IMAGE_REFERENCE }} || true
           podman manifest rm ${{ env.IMAGE_REFERENCE }} || true
           podman manifest create ${{ env.IMAGE_REFERENCE }}
-          
+
           BUILD_COMMAND="podman build \
             --file ${{ inputs.containerfile }} \
             --manifest ${{ env.IMAGE_REFERENCE }} \
@@ -84,11 +84,11 @@ jobs:
             --annotation 'org.opencontainers.image.revision=${{ github.sha }}' \
             --annotation 'org.opencontainers.image.created=$(date -u +%Y-%m-%dT%H:%M:%SZ)' \
             --annotation 'org.opencontainers.image.url=${{ github.server_url }}/${{ github.repository }}'"
-          
+
           if [ -n "${{ inputs.description }}" ]; then
             BUILD_COMMAND="${BUILD_COMMAND} --annotation 'org.opencontainers.image.description=${{ inputs.description }}'"
           fi
-           
+
           # Add build arg file if provided
           if [ -n "${{ inputs.build_arg_file }}" ]; then
             BUILD_COMMAND="${BUILD_COMMAND} --build-arg-file ${{ inputs.build_arg_file }}"

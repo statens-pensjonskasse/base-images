@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=ubuntu:22.04
+ARG BASE_IMAGE=cr.spk.no/docker-hub/library/ubuntu:22.04
 FROM ${BASE_IMAGE}
 ARG OS_VERSION=22.04
 ARG PHP_VERSION=8.3
@@ -97,8 +97,8 @@ RUN a2dismod mpm_event
 RUN a2enmod mpm_prefork
 RUN a2enmod php${PHP_VERSION}
 
-COPY resources/000-default.conf /etc/apache2/sites-available/
-COPY resources/ldap.conf /etc/apache2/mods-available/
+COPY ./resources/000-default.conf /etc/apache2/sites-available/
+COPY ./resources/ldap.conf /etc/apache2/mods-available/
 RUN a2enmod rewrite ldap authnz_ldap
 ENV APACHE_PID_FILE=${APACHE_RUNDIR}/httpd.pid
 RUN rm /var/www/html/index.html \
@@ -107,7 +107,7 @@ RUN rm /var/www/html/index.html \
     && sed -i "s/APACHE_RUN_USER=www-data/APACHE_RUN_USER=app/g" /etc/apache2/envvars \
     && sed -i "s/APACHE_RUN_GROUP=www-data/APACHE_RUN_GROUP=app/g" /etc/apache2/envvars
 
-COPY resources/run.sh /run.sh
+COPY ./resources/run.sh /run.sh
 
 # Add app user with uid 1000
 RUN useradd --uid 1000 app \

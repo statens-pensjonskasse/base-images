@@ -166,7 +166,7 @@ jobs:
       platforms: linux/amd64
       description: Node.js 24 container image based on Rocky Linux 9 minimal for SPK
 
-  php-mssql-8.3:
+  php-mssql-8-3:
     uses: ./.github/workflows/podman-build-and-publish.yaml
     secrets: inherit
     permissions:
