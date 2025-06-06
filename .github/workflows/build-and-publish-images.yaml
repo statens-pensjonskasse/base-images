@@ -17,9 +17,11 @@ jobs:
       image_name: 'rockylinux'
       image_tag: '9-minimal'
       containerfile: 'rocky-linux/Containerfile'
-      build_args: 'BASE_IMAGE=cr.spk.no/docker-hub/rockylinux:9-minimal'
+      build_args: 'BASE_IMAGE=rockylinux/rockylinux:9-minimal'
       platforms: 'linux/amd64'
       description: 'Rocky Linux 9 minimal container image for SPK'
+      runs_on: ubuntu-latest
+      sbom: false # podman på ubuntu støtter ikke --sbom (major-versjon 4 som er for gammel?)
 
   zulu-openjdk-21-jdk:
     uses: ./.github/workflows/podman-build-and-publish.yaml
@@ -178,3 +180,5 @@ jobs:
       containerfile: php-mssql/Containerfile
       platforms: linux/amd64
       description: PHP 8.3 container image based on plain ubuntu 22.04
+      sbom: false
+      runs_on: ubuntu-latest

@@ -43,6 +43,11 @@ on:
         description: 'Description for the image'
         type: string
         required: false
+      runs_on:
+        description: 'Runner to build on. Default is our on-prem spk-test-runner'
+        type: string
+        required: false
+        default: spk-test-runner
     secrets:
       registry_token:
         description: 'Token for registry authentication'
@@ -50,7 +55,7 @@ on:
 
 jobs:
   build-and-publish:
-    runs-on: spk-test-runner
+    runs-on: ${{ inputs.runs_on }}
     permissions:
       contents: read
       packages: write
@@ -73,9 +78,9 @@ jobs:
 
       - name: Build container image
         run: |
-          podman image rm ${{ env.IMAGE_REFERENCE }} || true
-          podman manifest rm ${{ env.IMAGE_REFERENCE }} || true
-          podman manifest create ${{ env.IMAGE_REFERENCE }}
+          # podman image rm ${{ env.IMAGE_REFERENCE }} || true
+          # podman manifest rm ${{ env.IMAGE_REFERENCE }} || true
+          # podman manifest create ${{ env.IMAGE_REFERENCE }}
 
           BUILD_COMMAND="podman build \
             --file ${{ inputs.containerfile }} \
