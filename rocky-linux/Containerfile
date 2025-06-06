@@ -11,14 +11,21 @@ ENV TZ=Europe/Oslo
 RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && \
     echo ${TZ} > /etc/timezone
 
+RUN ${PACKAGE_MANAGER} ${PACKAGE_MANAGER_FLAGS} update && \
+    ${PACKAGE_MANAGER} ${PACKAGE_MANAGER_FLAGS} install \
+    glibc-langpack-en && \
+    ${PACKAGE_MANAGER} clean all && \
+    rm -rf /var/cache/yum
+
 # Fetch and install current and previous root certificate from yum server
-ADD --chmod=644 https://yum.spk.no/pub/pki/spk-root-ca-current.pem /etc/pki/ca-trust/source/anchors/
-ADD --chmod=644 https://yum.spk.no/pub/pki/spk-root-ca-previous.pem /etc/pki/ca-trust/source/anchors/
+ADD --chmod=644 https://raw.githubusercontent.com/statens-pensjonskasse/internal-ca-certificates/refs/heads/main/spk-root-ca-current.pem /etc/pki/ca-trust/source/anchors/
+ADD --chmod=644 https://raw.githubusercontent.com/statens-pensjonskasse/internal-ca-certificates/refs/heads/main/spk-root-ca-previous.pem /etc/pki/ca-trust/source/anchors/
 RUN update-ca-trust extract
 
-# Remove mirrors and use baseurl (mostly for Rocky Linux) for repos
+# Remove mirrors and use baseurl (mostly for Rocky Linux) for repos, use https
 RUN sed -i '/^mirrorlist/d' /etc/yum.repos.d/*.repo && \
-    sed -i 's/^#baseurl/baseurl/' /etc/yum.repos.d/*.repo
+    sed -i 's/^#baseurl/baseurl/' /etc/yum.repos.d/*.repo && \
+    sed -i 's#http://#https://#g' /etc/yum.repos.d/*.repo
 
 # Evaluate templates for internal Yum repositories
 RUN --mount=type=bind,src=repos,dst=/tmp/repos \
@@ -33,12 +40,6 @@ RUN --mount=type=bind,src=repos,dst=/tmp/repos \
     for REPO in /tmp/repos/*; do \
         eval "echo \"$(cat ${REPO})\"" > /etc/yum.repos.d/$(basename ${REPO} .tmpl); \
     done;
-
-RUN ${PACKAGE_MANAGER} ${PACKAGE_MANAGER_FLAGS} update && \
-    ${PACKAGE_MANAGER} ${PACKAGE_MANAGER_FLAGS} install \
-    glibc-langpack-en && \
-    ${PACKAGE_MANAGER} clean all && \
-    rm -rf /var/cache/yum
 
 # Set locale
 ENV LANG=en_US.UTF-8 \
