@@ -6,7 +6,7 @@ ARG MAVEN_VERSION="3.9.9"
 ARG EXTRA_PACKAGES=""
 
 USER root
-COPY maven/settings.xml /opt/maven-settings/
+COPY settings.xml /opt/maven-settings/
 
 RUN ${PACKAGE_MANAGER} install -y \
     tar \
