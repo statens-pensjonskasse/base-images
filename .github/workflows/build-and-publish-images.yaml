@@ -7,26 +7,32 @@ on:
   workflow_dispatch:
 
 jobs:
-  rocky-linux-9-minimal:
-    uses: ./.github/workflows/podman-build-and-publish.yaml
-    secrets: inherit
+  rockylinux:
     permissions:
       contents: read
       packages: write
+    strategy:
+      matrix:
+        os_version: [8, 9]
+        distro:
+          - type: "-minimal"
+            package_manager: microdnf
+          - type: " "
+            package_manager: dnf
+    uses: ./.github/workflows/podman-build-and-publish.yaml
     with:
-      image_name: 'rockylinux'
-      image_tag: '9-minimal'
-      containerfile: 'rocky-linux/Containerfile'
-      build_args: 'BASE_IMAGE=rockylinux/rockylinux:9-minimal'
-      platforms: 'linux/amd64'
-      description: 'Rocky Linux 9 minimal container image for SPK'
+      image_name: "rockylinux"
+      image_tag: "${{ matrix.os_version }}${{ matrix.distro.type }}"
+      containerfile: "rocky-linux/Containerfile"
+      build_args: "BASE_IMAGE=docker.io/rockylinux/rockylinux:${{ matrix.os_version }}${{ matrix.distro.type }}, OS_VERSION=${{ matrix.os_version }}, PACKAGE_MANAGER=${{ matrix.distro.package_manager }}"
+      platforms: "linux/amd64"
+      description: "Rocky Linux ${{ matrix.os_version }}${{ matrix.distro.type }} container image for SPK"
       runs_on: ubuntu-latest
       sbom: false # podman på ubuntu støtter ikke --sbom (major-versjon 4 som er for gammel?)
 
   zulu-openjdk-21-jdk:
     uses: ./.github/workflows/podman-build-and-publish.yaml
-    needs: rocky-linux-9-minimal
-    secrets: inherit
+    needs: rockylinux
     permissions:
       contents: read
       packages: write
@@ -40,8 +46,7 @@ jobs:
 
   zulu-openjdk-21-jre:
     uses: ./.github/workflows/podman-build-and-publish.yaml
-    needs: rocky-linux-9-minimal
-    secrets: inherit
+    needs: rockylinux
     permissions:
       contents: read
       packages: write
@@ -56,7 +61,6 @@ jobs:
   maven-3-9-9-zulu-openjdk-21:
     uses: ./.github/workflows/podman-build-and-publish.yaml
     needs: zulu-openjdk-21-jdk
-    secrets: inherit
     permissions:
       contents: read
       packages: write
@@ -70,8 +74,7 @@ jobs:
 
   python-3-11:
     uses: ./.github/workflows/podman-build-and-publish.yaml
-    needs: rocky-linux-9-minimal
-    secrets: inherit
+    needs: rockylinux
     permissions:
       contents: read
       packages: write
@@ -85,8 +88,7 @@ jobs:
 
   python-3-12:
     uses: ./.github/workflows/podman-build-and-publish.yaml
-    needs: rocky-linux-9-minimal
-    secrets: inherit
+    needs: rockylinux
     permissions:
       contents: read
       packages: write
@@ -100,8 +102,7 @@ jobs:
 
   nodejs-22:
     uses: ./.github/workflows/podman-build-and-publish.yaml
-    needs: rocky-linux-9-minimal
-    secrets: inherit
+    needs: rockylinux
     permissions:
       contents: read
       packages: write
@@ -115,8 +116,7 @@ jobs:
 
   nodejs-22-builder:
     uses: ./.github/workflows/podman-build-and-publish.yaml
-    needs: rocky-linux-9-minimal
-    secrets: inherit
+    needs: rockylinux
     permissions:
       contents: read
       packages: write
@@ -135,8 +135,7 @@ jobs:
 
   nodejs-24:
     uses: ./.github/workflows/podman-build-and-publish.yaml
-    needs: rocky-linux-9-minimal
-    secrets: inherit
+    needs: rockylinux
     permissions:
       contents: read
       packages: write
@@ -144,14 +143,17 @@ jobs:
       image_name: nodejs
       image_tag: 24
       containerfile: nodejs/Containerfile
-      build_args: BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal, NODEJS_VERSION=24, NPM_VERSION=11
+      build_args: |
+        BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal,
+        NODEJS_VERSION=24,
+        NPM_VERSION=11
       platforms: linux/amd64
       description: Node.js 24 container image based on Rocky Linux 9 minimal for SPK
+      sbom: false
 
   nodejs-24-builder:
     uses: ./.github/workflows/podman-build-and-publish.yaml
-    needs: rocky-linux-9-minimal
-    secrets: inherit
+    needs: rockylinux
     permissions:
       contents: read
       packages: write
@@ -167,10 +169,10 @@ jobs:
         ADDITIONAL_PACKAGES="xorg-x11-server-Xvfb gtk2-devel gtk3-devel libnotify-devel GConf2 nss libXScrnSaver alsa-lib chromium"
       platforms: linux/amd64
       description: Node.js 24 container image based on Rocky Linux 9 minimal for SPK
+      sbom: false
 
   php-mssql-8-3:
     uses: ./.github/workflows/podman-build-and-publish.yaml
-    secrets: inherit
     permissions:
       contents: read
       packages: write

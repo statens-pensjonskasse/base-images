@@ -78,9 +78,9 @@ jobs:
 
       - name: Build container image
         run: |
-          # podman image rm ${{ env.IMAGE_REFERENCE }} || true
-          # podman manifest rm ${{ env.IMAGE_REFERENCE }} || true
-          # podman manifest create ${{ env.IMAGE_REFERENCE }}
+          podman image rm ${{ env.IMAGE_REFERENCE }} || true
+          podman manifest rm ${{ env.IMAGE_REFERENCE }} || true
+          podman manifest create ${{ env.IMAGE_REFERENCE }}
 
           BUILD_COMMAND="podman build \
             --file ${{ inputs.containerfile }} \
