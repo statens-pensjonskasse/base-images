@@ -151,7 +151,6 @@ jobs:
         NPM_VERSION=11
       platforms: linux/amd64
       description: Node.js 24 container image based on Rocky Linux 9 minimal for SPK
-      sbom: false
 
   nodejs-24-builder:
     uses: ./.github/workflows/podman-build-and-publish.yaml
@@ -171,7 +170,6 @@ jobs:
         ADDITIONAL_PACKAGES="xorg-x11-server-Xvfb gtk2-devel gtk3-devel libnotify-devel GConf2 nss libXScrnSaver alsa-lib chromium"
       platforms: linux/amd64
       description: Node.js 24 container image based on Rocky Linux 9 minimal for SPK
-      sbom: false
 
   php-mssql-8-3:
     uses: ./.github/workflows/podman-build-and-publish.yaml
@@ -184,5 +182,5 @@ jobs:
       containerfile: php-mssql/Containerfile
       platforms: linux/amd64
       description: PHP 8.3 container image based on plain ubuntu 22.04
-      sbom: false
+      sbom: false # podman på ubuntu støtter ikke --sbom (major-versjon 4 som er for gammel?)
       runs_on: ubuntu-latest
