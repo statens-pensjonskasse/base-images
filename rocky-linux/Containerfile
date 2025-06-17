@@ -6,6 +6,8 @@ ARG TARGETARCH
 ARG OS_VERSION=9
 ARG PACKAGE_MANAGER=microdnf
 ARG PACKAGE_MANAGER_FLAGS="--assumeyes --nodocs --setopt=install_weak_deps=0"
+ARG COMMON_PACKAGES="glibc-langpack-en shadow-utils"
+ARG DISTRO_SPECIFIC_PACKAGES=""
 
 ENV TZ=Europe/Oslo
 RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && \
@@ -14,8 +16,8 @@ RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && \
 # shadow-utils er for `useradd`, som mangler i 8-minimal (men ikke 9-minimal)
 RUN ${PACKAGE_MANAGER} ${PACKAGE_MANAGER_FLAGS} update && \
     ${PACKAGE_MANAGER} ${PACKAGE_MANAGER_FLAGS} install \
-        shadow-utils \
-        glibc-langpack-en && \
+        ${COMMON_PACKAGES} \
+        ${DISTRO_SPECIFIC_PACKAGES} && \
     ${PACKAGE_MANAGER} clean all && \
     rm -rf /var/cache/yum
 
