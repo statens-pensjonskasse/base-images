@@ -8,6 +8,7 @@ ARG PACKAGE_MANAGER=microdnf
 ARG PACKAGE_MANAGER_FLAGS="--assumeyes --nodocs --setopt=install_weak_deps=0"
 ARG COMMON_PACKAGES="glibc-langpack-en shadow-utils"
 ARG DISTRO_SPECIFIC_PACKAGES=""
+ARG MICROSOFT_REPO_NAME='MS_Prod_EL'
 
 ENV TZ=Europe/Oslo
 RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && \
