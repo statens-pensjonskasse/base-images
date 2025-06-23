@@ -16,10 +16,10 @@ jobs:
     strategy:
       matrix:
         os_version:
-          - 8
-            MICROSOFT_REPO_NAME=MS_Powershell_EL
-          - 9
-            MICROSOFT_REPO_NAME=MS_Prod_EL
+          - number: 8
+            MICROSOFT_REPO_NAME: MS_Powershell_EL
+          - number: 9
+            MICROSOFT_REPO_NAME: MS_Prod_EL
         distro:
           - type: "-minimal"
             package_manager: microdnf
@@ -28,11 +28,11 @@ jobs:
     uses: ./.github/workflows/podman-build-and-publish.yaml
     with:
       image_name: "rockylinux"
-      image_tag: "${{ matrix.os_version }}${{ matrix.distro.type }}"
+      image_tag: "${{ matrix.os_version.number }}${{ matrix.distro.type }}"
       containerfile: "rocky-linux/Containerfile"
-      build_args: "BASE_IMAGE=docker.io/rockylinux/rockylinux:${{ matrix.os_version }}${{ matrix.distro.type }}, OS_VERSION=${{ matrix.os_version }}, PACKAGE_MANAGER=${{ matrix.distro.package_manager }}, MICROSOFT_REPO_NAME=${{ matrix.MICROSOFT_REPO_NAME }}"
+      build_args: "BASE_IMAGE=docker.io/rockylinux/rockylinux:${{ matrix.os_version.number }}${{ matrix.distro.type }}, OS_VERSION=${{ matrix.os_version.number }}, PACKAGE_MANAGER=${{ matrix.distro.package_manager }}, MICROSOFT_REPO_NAME=${{ matrix.os_version.MICROSOFT_REPO_NAME }}"
       platforms: "linux/amd64"
-      description: "Rocky Linux ${{ matrix.os_version }}${{ matrix.distro.type }} container image for SPK"
+      description: "Rocky Linux ${{ matrix.os_version.number }}${{ matrix.distro.type }} container image for SPK"
       runs_on: ubuntu-latest
       sbom: false # podman på ubuntu støtter ikke --sbom (major-versjon 4 som er for gammel?)
 
