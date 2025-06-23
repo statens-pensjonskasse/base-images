@@ -15,7 +15,11 @@ jobs:
       packages: write
     strategy:
       matrix:
-        os_version: [8, 9]
+        os_version:
+          - 8
+            MICROSOFT_REPO_NAME=MS_Powershell_EL
+          - 9
+            MICROSOFT_REPO_NAME=MS_Prod_EL
         distro:
           - type: "-minimal"
             package_manager: microdnf
@@ -26,7 +30,7 @@ jobs:
       image_name: "rockylinux"
       image_tag: "${{ matrix.os_version }}${{ matrix.distro.type }}"
       containerfile: "rocky-linux/Containerfile"
-      build_args: "BASE_IMAGE=docker.io/rockylinux/rockylinux:${{ matrix.os_version }}${{ matrix.distro.type }}, OS_VERSION=${{ matrix.os_version }}, PACKAGE_MANAGER=${{ matrix.distro.package_manager }}"
+      build_args: "BASE_IMAGE=docker.io/rockylinux/rockylinux:${{ matrix.os_version }}${{ matrix.distro.type }}, OS_VERSION=${{ matrix.os_version }}, PACKAGE_MANAGER=${{ matrix.distro.package_manager }}, MICROSOFT_REPO_NAME=${{ matrix.MICROSOFT_REPO_NAME }}"
       platforms: "linux/amd64"
       description: "Rocky Linux ${{ matrix.os_version }}${{ matrix.distro.type }} container image for SPK"
       runs_on: ubuntu-latest
