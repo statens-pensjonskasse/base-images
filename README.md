@@ -74,3 +74,10 @@ Based on the plain ubuntu 22.04 image. Runs as non-root (User "app", uid 1000)
 Includes the specified PHP version with MSSQL ODBC driver.
 
 Available version: `8.3`
+
+## 🐹 Go
+
+Based on the Rocky Linux 9 minimal images.
+Includes the specified Go version.
+
+Available versions: `1.24.4`

@@ -1,0 +1,40 @@
+ARG BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal
+FROM ${BASE_IMAGE}
+
+ARG PACKAGE_MANAGER=microdnf
+ARG PACKAGE_MANAGER_FLAGS='-y --nodocs'
+
+USER root
+
+# Installer samme pakker som https://github.com/docker-library/golang/blob/d5ba02dca99c1a2d221c4a20e45eedc0f0380f31/Dockerfile-linux.template#L149
+# pluss curl og git.
+RUN ${PACKAGE_MANAGER} ${PACKAGE_MANAGER_FLAGS} install \
+    --nodocs \
+    --setopt=install_weak_deps=0 \
+    g++ \
+    gcc \
+    pkg-config \
+    make \
+    tar \
+    git && \
+    ${PACKAGE_MANAGER} clean all
+
+# Magisk variabel som blir satt til amd64 for linux/amd64 platform og arm64 for linux/arm64 platform
+ARG TARGETARCH
+ARG GO_VERSION=1.22.2
+ARG GOOS=linux
+
+ENV GO_VERSION=${GO_VERSION}
+
+RUN curl -sfLO https://go.dev/dl/go${GO_VERSION}.${GOOS}-${TARGETARCH}.tar.gz && \
+    tar -C /usr/local -xzf go${GO_VERSION}.${GOOS}-${TARGETARCH}.tar.gz && \
+    rm go${GO_VERSION}.${GOOS}-${TARGETARCH}.tar.gz
+
+USER app
+
+RUN mkdir /home/app/go
+ENV GOPATH /home/app/go
+ENV PATH "${GOPATH}/bin:/usr/local/go/bin:$PATH"
+RUN mkdir -p "${GOPATH}/src" "${GOPATH}/bin" && chmod -R 1777 "${GOPATH}"
+
+WORKDIR /home/app
