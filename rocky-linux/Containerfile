@@ -1,9 +1,11 @@
-ARG BASE_IMAGE=rockylinux/rockylinux:9-minimal
-FROM ${BASE_IMAGE}
+ARG OS_VERSION=9
+ARG OS_TYPE=-minimal
+FROM rockylinux/rockylinux:${OS_VERSION}${OS_TYPE}
 
 # Magical variable that is set to amd64 for linux/amd64 platform and arm64 for linux/arm64 platform
+ARG OS_VERSION
+ARG OS_TYPE
 ARG TARGETARCH
-ARG OS_VERSION=9
 ARG PACKAGE_MANAGER=microdnf
 ARG PACKAGE_MANAGER_FLAGS="--assumeyes --nodocs --setopt=install_weak_deps=0"
 ARG COMMON_PACKAGES="glibc-langpack-en shadow-utils"
@@ -14,7 +16,7 @@ ENV TZ=Europe/Oslo
 RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && \
     echo ${TZ} > /etc/timezone
 
-# shadow-utils er for `useradd`, som mangler i 8-minimal (men ikke 9-minimal)
+# shadow-utils are needed for `useradd`, which is missing in 8-minimal (but not in 9-minimal)
 RUN ${PACKAGE_MANAGER} ${PACKAGE_MANAGER_FLAGS} update && \
     ${PACKAGE_MANAGER} ${PACKAGE_MANAGER_FLAGS} install \
         ${COMMON_PACKAGES} \
@@ -27,27 +29,22 @@ ADD --chmod=644 https://raw.githubusercontent.com/statens-pensjonskasse/internal
 ADD --chmod=644 https://raw.githubusercontent.com/statens-pensjonskasse/internal-ca-certificates/refs/heads/main/spk-root-ca-previous.pem /etc/pki/ca-trust/source/anchors/
 RUN update-ca-trust extract
 
-# Install yum repositories - TODO bytte til eksterne repos (venter litt med det)
-# RUN ${PACKAGE_MANAGER} ${PACKAGE_MANAGER_FLAGS} install -y epel-release
-# RUN curl -sSL -o /etc/yum.repos.d/docker-ce.repo https://download.docker.com/linux/rhel/docker-ce.repo
-# RUN curl -sSL -O https://packages.microsoft.com/config/rhel/${OS_VERSION}/packages-microsoft-prod.rpm \
-#     && rpm -ivh ./packages-microsoft-prod.rpm \
-#     && rm -f packages-microsoft-prod.rpm
-# RUN curl -sSL -O https://cdn.azul.com/zulu/bin/zulu-repo-1.0.0-1.noarch.rpm \
-#     && rpm -ivh ./zulu-repo-1.0.0-1.noarch.rpm \
-#     && rm -f zulu-repo-1.0.0-1.noarch.rpm
-
-# Remove mirrors and use baseurl (mostly for Rocky Linux) for repos, use https
-RUN sed -i '/^mirrorlist/d' /etc/yum.repos.d/*.repo && \
-    sed -i 's/^#baseurl/baseurl/' /etc/yum.repos.d/*.repo && \
-    sed -i 's#http://#https://#g' /etc/yum.repos.d/*.repo
+# Install extra yum repositories - EPEL, Docker, Microsoft and Azul Zulu (java)
+RUN ${PACKAGE_MANAGER} ${PACKAGE_MANAGER_FLAGS} install -y epel-release
+RUN curl -sSL -o /etc/yum.repos.d/docker-ce.repo https://download.docker.com/linux/rhel/docker-ce.repo
+RUN curl -sSL -O https://packages.microsoft.com/config/rhel/${OS_VERSION}/packages-microsoft-prod.rpm \
+    && rpm -ivh ./packages-microsoft-prod.rpm \
+    && rm -f packages-microsoft-prod.rpm
+RUN curl -sSL -O https://cdn.azul.com/zulu/bin/zulu-repo-1.0.0-1.noarch.rpm \
+    && rpm -ivh ./zulu-repo-1.0.0-1.noarch.rpm \
+    && rm -f zulu-repo-1.0.0-1.noarch.rpm
 
 # Evaluate templates for internal Yum repositories
 RUN --mount=type=bind,src=repos,dst=/tmp/repos \
     if [ "${TARGETARCH}" = "amd64" ]; then \
-      ARCH=x86_64; \
+        ARCH=x86_64; \
     elif [ "${TARGETARCH}" = "arm64" ]; then \
-      ARCH=aarch64 ; \
+        ARCH=aarch64; \
     else \
         echo "Error: Target architecture '${TARGETARCH}' is not supported" && \
         exit 1; \
@@ -55,6 +52,9 @@ RUN --mount=type=bind,src=repos,dst=/tmp/repos \
     for REPO in /tmp/repos/*; do \
         eval "echo \"$(cat ${REPO})\"" > /etc/yum.repos.d/$(basename ${REPO} .tmpl); \
     done;
+
+# Disable internal Yum repositories so we can run install on cloud runners
+RUN sed -i 's/^enabled=1/enabled=0/' /etc/yum.repos.d/spk*.repo
 
 # Set locale
 ENV LANG=en_US.UTF-8 \
