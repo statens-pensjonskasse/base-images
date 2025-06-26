@@ -43,11 +43,11 @@ on:
         description: 'Description for the image'
         type: string
         required: false
-      runs_on:
-        description: 'Runner to build on. Default is our on-prem spk-test-runner'
+      runner_tag:
+        description: 'Runner to build on. Default is ubuntu-latest (cloud)'
         type: string
         required: false
-        default: spk-test-runner
+        default: ubuntu-latest
     secrets:
       registry_token:
         description: 'Token for registry authentication'
@@ -55,7 +55,7 @@ on:
 
 jobs:
   build-and-publish:
-    runs-on: ${{ inputs.runs_on }}
+    runs-on: ${{ inputs.runner_tag }}
     permissions:
       contents: read
       packages: write
