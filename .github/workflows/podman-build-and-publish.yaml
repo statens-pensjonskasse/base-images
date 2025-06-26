@@ -115,5 +115,6 @@ jobs:
           echo "${BUILD_COMMAND}"
           eval "${BUILD_COMMAND}"
 
-      - name: Push image to Container Registry
+      - name: Push image to Container Registry only on main branch
+        if: github.ref == 'refs/heads/main'
         run: podman manifest push ${{ env.IMAGE_REFERENCE }}

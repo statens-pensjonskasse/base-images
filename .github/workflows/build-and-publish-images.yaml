@@ -184,3 +184,17 @@ jobs:
       containerfile: php-mssql/Containerfile
       platforms: linux/amd64
       description: PHP 8.3 container image based on plain ubuntu 22.04
+
+  go:
+    uses: ./.github/workflows/podman-build-and-publish.yaml
+    needs: rockylinux
+    permissions:
+      contents: read
+      packages: write
+    with:
+      image_name: go
+      image_tag: 1.24.4
+      containerfile: go/Containerfile
+      build_args: BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal, GO_VERSION=1.24.4
+      platforms: linux/amd64
+      description: Go container image based on Rocky Linux 9 minimal for SPK
