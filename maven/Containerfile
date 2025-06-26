@@ -8,19 +8,19 @@ ARG EXTRA_PACKAGES=""
 USER root
 
 RUN ${PACKAGE_MANAGER} install -y \
-    tar \
-    git \
-    which \
-    curl \
-    wget \
-    fontconfig \
-    ${EXTRA_PACKAGES} && \
-    ${PACKAGE_MANAGER} clean all && \
-    rm -rf /var/cache/yum
+        curl \
+        fontconfig \
+        git-core \
+        tar \
+        wget \
+        which \
+        ${EXTRA_PACKAGES} \
+    && ${PACKAGE_MANAGER} clean all \
+    && rm -rf /var/cache/yum
 
 # Må av en ukjent grunn kjøre `gzip -d` manuelt før utpakking med `tar -xvf` for arm64-image.
 # Kun `tar -zxvf` fører til feilen `tar: Child returned status 1`
-RUN curl -sSL -O "https://yum.spk.no/pub/install/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz" &&\
+RUN curl -sSL -O "https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz" &&\
     gzip -d "apache-maven-${MAVEN_VERSION}-bin.tar.gz" &&\
     tar -xvf "apache-maven-${MAVEN_VERSION}-bin.tar" -C "/opt" &&\
     rm "apache-maven-${MAVEN_VERSION}-bin.tar" &&\
