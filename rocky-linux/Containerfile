@@ -35,9 +35,6 @@ RUN curl -sSL -o /etc/yum.repos.d/docker-ce.repo https://download.docker.com/lin
 RUN curl -sSL -O https://packages.microsoft.com/config/rhel/${OS_VERSION}/packages-microsoft-prod.rpm \
     && rpm -ivh ./packages-microsoft-prod.rpm \
     && rm -f packages-microsoft-prod.rpm
-RUN curl -sSL -O https://cdn.azul.com/zulu/bin/zulu-repo-1.0.0-1.noarch.rpm \
-    && rpm -ivh ./zulu-repo-1.0.0-1.noarch.rpm \
-    && rm -f zulu-repo-1.0.0-1.noarch.rpm
 
 # Evaluate templates for internal Yum repositories
 RUN --mount=type=bind,src=repos,dst=/tmp/repos \

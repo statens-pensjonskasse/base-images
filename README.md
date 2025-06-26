@@ -23,7 +23,7 @@ Available versions:
 * `9`
 * `9-minimal`
 
-Please note that the yum repositories for Docker, Microsoft, EPEL and Zulu point to the
+Please note that the yum repositories for Docker, Microsoft and EPEL point to the
 external sites, not to our internal Satellite as before.
 
 Our internal EL repositories on yum.spk.no are disabled in the repo file (with `enabled=0`),
