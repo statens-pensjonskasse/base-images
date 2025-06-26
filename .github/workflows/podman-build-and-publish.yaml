@@ -36,9 +36,9 @@ on:
         type: string
         default: 'linux/amd64'
       sbom:
-        description: 'Generate Software Bill of Materials'
+        description: 'Generate Software Bill of Materials. Midlertidig false fordi podman på ubuntu-latest støtter ikke --sbom (major-versjon 4 som er for gammel)'
         type: boolean
-        default: true
+        default: false
       description:
         description: 'Description for the image'
         type: string

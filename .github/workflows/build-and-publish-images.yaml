@@ -33,7 +33,6 @@ jobs:
       build_args: "OS_VERSION=${{ matrix.os_version.number }}, OS_TYPE=${{ matrix.distro.type }}, PACKAGE_MANAGER=${{ matrix.distro.package_manager }}, MICROSOFT_REPO_NAME=${{ matrix.os_version.MICROSOFT_REPO_NAME }}"
       platforms: "linux/amd64"
       description: "Rocky Linux ${{ matrix.os_version.number }}${{ matrix.distro.type }} container image for SPK"
-      sbom: false # podman på ubuntu støtter ikke --sbom (major-versjon 4 som er for gammel?)
 
   zulu-openjdk-21-jdk:
     uses: ./.github/workflows/podman-build-and-publish.yaml
@@ -185,4 +184,3 @@ jobs:
       containerfile: php-mssql/Containerfile
       platforms: linux/amd64
       description: PHP 8.3 container image based on plain ubuntu 22.04
-      sbom: false # podman på ubuntu støtter ikke --sbom (major-versjon 4 som er for gammel?)
