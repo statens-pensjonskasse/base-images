@@ -16,162 +16,105 @@ jobs:
     strategy:
       matrix:
         os_version:
-          - number: 8
-            MICROSOFT_REPO_NAME: MS_Powershell_EL
-          - number: 9
-            MICROSOFT_REPO_NAME: MS_Prod_EL
+          - { version: 8, microsoft_repo_name: MS_Powershell_EL }
+          - { version: 9, microsoft_repo_name: MS_Prod_EL }
         distro:
-          - type: "-minimal"
-            package_manager: microdnf
-          - type: " "
-            package_manager: dnf
+          - { type: "-minimal", package_manager: microdnf }
+          - { type: " ", package_manager: dnf }
     uses: ./.github/workflows/podman-build-and-publish.yaml
     with:
       image_name: "rockylinux"
       image_tag: "${{ matrix.os_version.number }}${{ matrix.distro.type }}"
       containerfile: "rocky-linux/Containerfile"
-      build_args: "OS_VERSION=${{ matrix.os_version.number }}, OS_TYPE=${{ matrix.distro.type }}, PACKAGE_MANAGER=${{ matrix.distro.package_manager }}, MICROSOFT_REPO_NAME=${{ matrix.os_version.MICROSOFT_REPO_NAME }}"
-      platforms: "linux/amd64"
-      description: "Rocky Linux ${{ matrix.os_version.number }}${{ matrix.distro.type }} container image for SPK"
+      build_args: "OS_VERSION=${{ matrix.os_version.version }}, OS_TYPE=${{ matrix.distro.type }}, PACKAGE_MANAGER=${{ matrix.distro.package_manager }}, MICROSOFT_REPO_NAME=${{ matrix.os_version.microsoft_repo_name }}"
+      platforms: 'linux/amd64,linux/arm64'
+      description: "Rocky Linux ${{ matrix.os_version.version }}${{ matrix.distro.type }} container image for SPK"
 
-  zulu-openjdk-21-jdk:
+  zulu-openjdk:
     uses: ./.github/workflows/podman-build-and-publish.yaml
     needs: rockylinux
     permissions:
       contents: read
       packages: write
+    strategy:
+      matrix:
+        java_version: [ 21 ]
+        java_type: [ jdk, jre ]
     with:
       image_name: 'zulu-openjdk'
-      image_tag: '21-jdk'
+      image_tag: "${{ matrix.java_version }}-${{ matrix.java_type }}"
       containerfile: 'zulu-openjdk/Containerfile'
-      build_args: 'BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal, JAVA_VERSION=21, JAVA_TYPE=jdk'
-      platforms: 'linux/amd64'
-      description: 'Java 21 JDK (Zulu OpenJDK) container image based on Rocky Linux 9 minimal for SPK'
+      build_args: |
+        BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal,
+        JAVA_VERSION=${{ matrix.java_version }},
+        JAVA_TYPE=${{ matrix.java_type }}
+      platforms: 'linux/amd64,linux/arm64'
+      description: "Java ${{ matrix.java_version }} ${{ matrix.java_type }} (Zulu OpenJDK) container image based on Rocky Linux 9 minimal for SPK"
 
-  zulu-openjdk-21-jre:
+  maven:
     uses: ./.github/workflows/podman-build-and-publish.yaml
-    needs: rockylinux
+    needs: zulu-openjdk
     permissions:
       contents: read
       packages: write
-    with:
-      image_name: 'zulu-openjdk'
-      image_tag: '21-jre'
-      containerfile: 'zulu-openjdk/Containerfile'
-      build_args: 'BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal, JAVA_VERSION=21, JAVA_TYPE=jre'
-      platforms: 'linux/amd64'
-      description: 'Java 21 JRE (Zulu OpenJDK) container image based on Rocky Linux 9 minimal for SPK'
-
-  maven-3-9-9-zulu-openjdk-21:
-    uses: ./.github/workflows/podman-build-and-publish.yaml
-    needs: zulu-openjdk-21-jdk
-    permissions:
-      contents: read
-      packages: write
+    strategy:
+      matrix:
+        java_version: [ 21 ]
+        maven_version: [ 3.9.9 ]
     with:
       image_name: 'maven'
-      image_tag: '3.9.9-zulu-openjdk-21'
+      image_tag: '${{ matrix.maven_version }}-zulu-openjdk-${{ matrix.java_version }}'
       containerfile: 'maven/Containerfile'
-      build_args: 'BASE_IMAGE=ghcr.io/statens-pensjonskasse/zulu-openjdk:21-jdk, MAVEN_VERSION=3.9.9'
-      platforms: 'linux/amd64'
-      description: 'Maven 3.9.9 container image based on Zulu OpenJDK 21 for SPK and Rocky Linux 9 minimal'
+      build_args: |
+        BASE_IMAGE=ghcr.io/statens-pensjonskasse/zulu-openjdk:${{ matrix.java_version }}-jdk,
+        MAVEN_VERSION=${{ matrix.maven_version }}
+      platforms: 'linux/amd64,linux/arm64'
+      description: "Maven ${{ matrix.maven_version }} container image based on Zulu OpenJDK ${{ matrix.java_version }} for SPK and Rocky Linux 9 minimal"
 
-  python-3-11:
+  python:
     uses: ./.github/workflows/podman-build-and-publish.yaml
     needs: rockylinux
     permissions:
       contents: read
       packages: write
+    strategy:
+      matrix:
+        python_version: [ 3.11, 3.12 ]
     with:
       image_name: python
-      image_tag: 3.11
+      image_tag: "${{ matrix.python_version }}"
       containerfile: python/Containerfile
-      build_args: BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal, PYTHON_VERSION=3.11
+      build_args: |
+        BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal, 
+        PYTHON_VERSION=${{ matrix.python_version }}
       platforms: linux/amd64
-      description: Python 3.11 container image based on Rocky Linux 9 minimal for SPK
+      description: Python ${{ matrix.python_version }} container image based on Rocky Linux 9 minimal for SPK
 
-  python-3-12:
+  nodejs:
     uses: ./.github/workflows/podman-build-and-publish.yaml
     needs: rockylinux
     permissions:
       contents: read
       packages: write
-    with:
-      image_name: python
-      image_tag: 3.12
-      containerfile: python/Containerfile
-      build_args: BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal, PYTHON_VERSION=3.12
-      platforms: linux/amd64
-      description: Python 3.12 container image based on Rocky Linux 9 minimal for SPK
-
-  nodejs-22:
-    uses: ./.github/workflows/podman-build-and-publish.yaml
-    needs: rockylinux
-    permissions:
-      contents: read
-      packages: write
+    strategy:
+      matrix:
+        version:
+          - { nodejs: 22, npm: 10 }
+          - { nodejs: 24, npm: 11 }
+        type:
+          - { tag: ' ', additional_packages: ' ' }
+          - { tag: '-builder', additional_packages: 'git nss freetype harfbuzz gcc-c++ make bzip2 xorg-x11-server-Xvfb gtk2-devel gtk3-devel libnotify-devel GConf2 nss libXScrnSaver alsa-lib chromium' }
     with:
       image_name: nodejs
-      image_tag: 22
-      containerfile: nodejs/Containerfile
-      build_args: BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal, NODEJS_VERSION=22, NPM_VERSION=10
-      platforms: linux/amd64
-      description: Node.js 22 container image based on Rocky Linux 9 minimal for SPK
-
-  nodejs-22-builder:
-    uses: ./.github/workflows/podman-build-and-publish.yaml
-    needs: rockylinux
-    permissions:
-      contents: read
-      packages: write
-    with:
-      image_name: nodejs
-      image_tag: 22-builder
+      image_tag: "${{ matrix.version.nodejs }}${{ matrix.type.tag }}"
       containerfile: nodejs/Containerfile
       build_args: |
         BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal,
-        NODEJS_VERSION=22,
-        NPM_VERSION=10,
-        INSTALL_PACKAGES="nodejs curl git nss freetype harfbuzz gcc-c++ make bzip2",
-        ADDITIONAL_PACKAGES="xorg-x11-server-Xvfb gtk2-devel gtk3-devel libnotify-devel GConf2 nss libXScrnSaver alsa-lib chromium"
+        NODEJS_VERSION=${{ matrix.version.nodejs }},
+        NPM_VERSION=${{ matrix.version.npm }},
+        ADDITIONAL_PACKAGES=${{ matrix.type.additional_packages }}
       platforms: linux/amd64
-      description: Node.js 22 container image based on Rocky Linux 9 minimal for SPK
-
-  nodejs-24:
-    uses: ./.github/workflows/podman-build-and-publish.yaml
-    needs: rockylinux
-    permissions:
-      contents: read
-      packages: write
-    with:
-      image_name: nodejs
-      image_tag: 24
-      containerfile: nodejs/Containerfile
-      build_args: |
-        BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal,
-        NODEJS_VERSION=24,
-        NPM_VERSION=11
-      platforms: linux/amd64
-      description: Node.js 24 container image based on Rocky Linux 9 minimal for SPK
-
-  nodejs-24-builder:
-    uses: ./.github/workflows/podman-build-and-publish.yaml
-    needs: rockylinux
-    permissions:
-      contents: read
-      packages: write
-    with:
-      image_name: nodejs
-      image_tag: 24-builder
-      containerfile: nodejs/Containerfile
-      build_args: |
-        BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal,
-        NODEJS_VERSION=24,
-        NPM_VERSION=11,
-        INSTALL_PACKAGES="nodejs curl git nss freetype harfbuzz gcc-c++ make bzip2",
-        ADDITIONAL_PACKAGES="xorg-x11-server-Xvfb gtk2-devel gtk3-devel libnotify-devel GConf2 nss libXScrnSaver alsa-lib chromium"
-      platforms: linux/amd64
-      description: Node.js 24 container image based on Rocky Linux 9 minimal for SPK
+      description: "Node.js ${{ matrix.version.nodejs }}${{ matrix.type.tag }} container image based on Rocky Linux 9 minimal for SPK"
 
   php-mssql-8-3:
     uses: ./.github/workflows/podman-build-and-publish.yaml
@@ -191,10 +134,15 @@ jobs:
     permissions:
       contents: read
       packages: write
+    strategy:
+      matrix:
+        go_version: [ 1.24.4 ]
     with:
       image_name: go
-      image_tag: 1.24.4
+      image_tag: "${{ matrix.go_version }}"
       containerfile: go/Containerfile
-      build_args: BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal, GO_VERSION=1.24.4
+      build_args: |
+        BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal,
+        GO_VERSION=${{ matrix.go_version }}
       platforms: linux/amd64
       description: Go container image based on Rocky Linux 9 minimal for SPK
