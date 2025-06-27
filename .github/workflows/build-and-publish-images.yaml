@@ -30,7 +30,7 @@ jobs:
         OS_VERSION=${{ matrix.os_version.version }},
         OS_TYPE=${{ matrix.distro.type }}, 
         PACKAGE_MANAGER=${{ matrix.distro.package_manager }}, 
-        MICROSOFT_REPO_NAME=${{ matrix.os_version.microsoft_repo_name }
+        MICROSOFT_REPO_NAME=${{ matrix.os_version.microsoft_repo_name }}
       platforms: linux/amd64,linux/arm64
       description: "Rocky Linux ${{ matrix.os_version.version }}${{ matrix.distro.type }} container image for SPK"
 
