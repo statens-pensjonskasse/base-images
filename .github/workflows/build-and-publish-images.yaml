@@ -116,7 +116,7 @@ jobs:
         BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal,
         NODEJS_VERSION=${{ matrix.version.nodejs }},
         NPM_VERSION=${{ matrix.version.npm }},
-        ADDITIONAL_PACKAGES=${{ matrix.type.additional_packages }}
+        ADDITIONAL_PACKAGES=\"${{ matrix.type.additional_packages }}\"
       platforms: linux/amd64
       description: "Node.js ${{ matrix.version.nodejs }}${{ matrix.type.tag }} container image based on Rocky Linux 9 minimal for SPK"
 
