@@ -26,10 +26,10 @@ jobs:
       image_name: rockylinux
       image_tag: "${{ matrix.os_version.version }}${{ matrix.distro.type }}"
       containerfile: rocky-linux/Containerfile
-      build_args: |
+      build_args: >
         OS_VERSION=${{ matrix.os_version.version }},
-        OS_TYPE=${{ matrix.distro.type }}, 
-        PACKAGE_MANAGER=${{ matrix.distro.package_manager }}, 
+        OS_TYPE=${{ matrix.distro.type }},
+        PACKAGE_MANAGER=${{ matrix.distro.package_manager }},
         MICROSOFT_REPO_NAME=${{ matrix.os_version.microsoft_repo_name }}
       platforms: linux/amd64,linux/arm64
       description: "Rocky Linux ${{ matrix.os_version.version }}${{ matrix.distro.type }} container image for SPK"
@@ -48,7 +48,7 @@ jobs:
       image_name: zulu-openjdk
       image_tag: "${{ matrix.java_version }}-${{ matrix.java_type }}"
       containerfile: zulu-openjdk/Containerfile
-      build_args: |
+      build_args: >
         BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal,
         JAVA_VERSION=${{ matrix.java_version }},
         JAVA_TYPE=${{ matrix.java_type }}
@@ -69,7 +69,7 @@ jobs:
       image_name: maven
       image_tag: '${{ matrix.maven_version }}-zulu-openjdk-${{ matrix.java_version }}'
       containerfile: maven/Containerfile
-      build_args: |
+      build_args: >
         BASE_IMAGE=ghcr.io/statens-pensjonskasse/zulu-openjdk:${{ matrix.java_version }}-jdk,
         MAVEN_VERSION=${{ matrix.maven_version }}
       platforms: linux/amd64
@@ -88,7 +88,7 @@ jobs:
       image_name: python
       image_tag: "${{ matrix.python_version }}"
       containerfile: python/Containerfile
-      build_args: |
+      build_args: >
         BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal,
         PYTHON_VERSION=${{ matrix.python_version }}
       platforms: linux/amd64
@@ -112,11 +112,11 @@ jobs:
       image_name: nodejs
       image_tag: "${{ matrix.version.nodejs }}${{ matrix.type.tag }}"
       containerfile: nodejs/Containerfile
-      build_args: |
+      build_args: >
         BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal,
         NODEJS_VERSION=${{ matrix.version.nodejs }},
         NPM_VERSION=${{ matrix.version.npm }},
-        ADDITIONAL_PACKAGES=${{ matrix.type.additional_packages }}
+        ADDITIONAL_PACKAGES=\"${{ matrix.type.additional_packages }}\"
       platforms: linux/amd64
       description: "Node.js ${{ matrix.version.nodejs }}${{ matrix.type.tag }} container image based on Rocky Linux 9 minimal for SPK"
 
@@ -145,7 +145,7 @@ jobs:
       image_name: go
       image_tag: "${{ matrix.go_version }}"
       containerfile: go/Containerfile
-      build_args: |
+      build_args: >
         BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal,
         GO_VERSION=${{ matrix.go_version }}
       platforms: linux/amd64
