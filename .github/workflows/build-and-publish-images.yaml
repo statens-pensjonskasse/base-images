@@ -52,7 +52,7 @@ jobs:
         BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal,
         JAVA_VERSION=${{ matrix.java_version }},
         JAVA_TYPE=${{ matrix.java_type }}
-      platforms: linux/amd64
+      platforms: linux/amd64,linux/arm64
       description: "Java ${{ matrix.java_version }} ${{ matrix.java_type }} (Zulu OpenJDK) container image based on Rocky Linux 9 minimal for SPK"
 
   maven:
@@ -91,7 +91,7 @@ jobs:
       build_args: >
         BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal,
         PYTHON_VERSION=${{ matrix.python_version }}
-      platforms: linux/amd64
+      platforms: linux/amd64,linux/arm64
       description: Python ${{ matrix.python_version }} container image based on Rocky Linux 9 minimal for SPK
 
   nodejs:
@@ -117,7 +117,7 @@ jobs:
         NODEJS_VERSION=${{ matrix.version.nodejs }},
         NPM_VERSION=${{ matrix.version.npm }},
         ADDITIONAL_PACKAGES=\"${{ matrix.type.additional_packages }}\"
-      platforms: linux/amd64
+      platforms: linux/amd64,linux/arm64
       description: "Node.js ${{ matrix.version.nodejs }}${{ matrix.type.tag }} container image based on Rocky Linux 9 minimal for SPK"
 
   php-mssql-8-3:
@@ -129,7 +129,7 @@ jobs:
       image_name: php-mssql
       image_tag: 8.3
       containerfile: php-mssql/Containerfile
-      platforms: linux/amd64
+      platforms: linux/amd64,linux/arm64
       description: PHP 8.3 container image based on plain ubuntu 22.04
 
   go:
@@ -140,7 +140,7 @@ jobs:
       packages: write
     strategy:
       matrix:
-        go_version: [ 1.24.4 ]
+        go_version: [ 1.24.5 ]
     with:
       image_name: go
       image_tag: "${{ matrix.go_version }}"
@@ -148,5 +148,5 @@ jobs:
       build_args: >
         BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal,
         GO_VERSION=${{ matrix.go_version }}
-      platforms: linux/amd64
+      platforms: linux/amd64,linux/arm64
       description: Go container image based on Rocky Linux 9 minimal for SPK
