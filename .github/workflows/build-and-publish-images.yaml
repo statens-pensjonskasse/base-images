@@ -72,7 +72,7 @@ jobs:
       build_args: >
         BASE_IMAGE=ghcr.io/statens-pensjonskasse/zulu-openjdk:${{ matrix.java_version }}-jdk,
         MAVEN_VERSION=${{ matrix.maven_version }}
-      platforms: linux/amd64,linux/arm64
+      platforms: linux/amd64
       description: "Maven ${{ matrix.maven_version }} container image based on Zulu OpenJDK ${{ matrix.java_version }} for SPK and Rocky Linux 9 minimal"
 
   python:
