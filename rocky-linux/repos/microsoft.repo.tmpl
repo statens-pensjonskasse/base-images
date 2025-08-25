@@ -1,0 +1,8 @@
+# Repoet er kalt "Powershell" i vår Satellite, men det refererer egentlig til Microsoft sitt
+# repo, ref. https://docs.microsoft.com/en-us/windows-server/administration/linux-package-repository-for-microsoft-software
+[microsoft-el${OS_VERSION}]
+name = Microsoft EL${OS_VERSION}
+baseurl = http://rhs50.spk.no/pulp/content/SPK/Library/custom/${MICROSOFT_REPO_NAME}${OS_VERSION}/${MICROSOFT_REPO_NAME}${OS_VERSION}/
+metadata_expire = 1
+enabled = 1
+gpgcheck = 0

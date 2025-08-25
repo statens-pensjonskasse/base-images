@@ -23,17 +23,15 @@ Available versions:
 * `9`
 * `9-minimal`
 
-Please note that the yum repositories for Docker, Microsoft and EPEL point to the
-external sites, not to our internal Satellite as before.
+### Yum repositories
 
-Our internal EL repositories on yum.spk.no are disabled in the repo file (with `enabled=0`),
-so that they can be used in cloud builds.
-If you need to install applications from yum.spk.no, you need to build on our internal runners, and enable the repos in
-your Containerfile with something like this:
+As default, only standard external yum repositories are enabled, no internal SPK repos.
+That means you can use it on cloud runners.
 
-```Dockerfile
-RUN sed -i 's/^enabled=0/enabled=1/' /etc/yum.repos.d/spk*.repo
-```
+If you need to install SPK-RPMs, you need to build on our internal runners,
+enable the SPK repos, and disable the mirrorlist in the standard repos.
+The repo config can be done by running the script `yum-switch-to-internal-repos.sh`
+in your build file, as root, before `dnf install`.
 
 ## ☕️ Zulu OpenJDK
 

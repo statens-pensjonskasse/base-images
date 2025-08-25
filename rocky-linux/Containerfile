@@ -36,7 +36,10 @@ RUN curl -sSL -O https://packages.microsoft.com/config/rhel/${OS_VERSION}/packag
     && rpm -ivh ./packages-microsoft-prod.rpm \
     && rm -f packages-microsoft-prod.rpm
 
+# Add script for enabling internal Yum repositories (and disabling mirrorlists)
+COPY yum-switch-to-internal-repos.sh /usr/local/bin/
 # Evaluate templates for internal Yum repositories
+# Put them in /etc/yum.repos-internal.d so they can be enabled by the enable-internal-yum-repos.sh script
 RUN --mount=type=bind,src=repos,dst=/tmp/repos \
     if [ "${TARGETARCH}" = "amd64" ]; then \
         ARCH=x86_64; \
@@ -46,12 +49,10 @@ RUN --mount=type=bind,src=repos,dst=/tmp/repos \
         echo "Error: Target architecture '${TARGETARCH}' is not supported" && \
         exit 1; \
     fi; \
+    mkdir -p /etc/yum.repos-internal.d; \
     for REPO in /tmp/repos/*; do \
-        eval "echo \"$(cat ${REPO})\"" > /etc/yum.repos.d/$(basename ${REPO} .tmpl); \
+        eval "echo \"$(cat ${REPO})\"" > /etc/yum.repos-internal.d/$(basename ${REPO} .tmpl); \
     done;
-
-# Disable internal Yum repositories so we can run install on cloud runners
-RUN sed -i 's/^enabled=1/enabled=0/' /etc/yum.repos.d/spk*.repo
 
 # Set locale
 ENV LANG=en_US.UTF-8 \
