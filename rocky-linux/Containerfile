@@ -16,28 +16,30 @@ ENV TZ=Europe/Oslo
 RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && \
     echo ${TZ} > /etc/timezone
 
+# Add script for enabling internal Yum repositories and disabling mirrorlists
+COPY yum-switch-to-internal-repos.sh /usr/local/bin/
+
 # shadow-utils are needed for `useradd`, which is missing in 8-minimal (but not in 9-minimal)
+# Also adds EPEL-repo
 RUN ${PACKAGE_MANAGER} ${PACKAGE_MANAGER_FLAGS} update && \
     ${PACKAGE_MANAGER} ${PACKAGE_MANAGER_FLAGS} install \
         ${COMMON_PACKAGES} \
-        ${DISTRO_SPECIFIC_PACKAGES} && \
+        ${DISTRO_SPECIFIC_PACKAGES} \
+        epel-release && \
     ${PACKAGE_MANAGER} clean all && \
     rm -rf /var/cache/yum
+
+# Install yum repositories for Docker and Microsoft
+RUN curl -sSL -o /etc/yum.repos.d/docker-ce.repo https://download.docker.com/linux/rhel/docker-ce.repo
+RUN curl -sSL -O https://packages.microsoft.com/config/rhel/${OS_VERSION}/packages-microsoft-prod.rpm \
+    && rpm -ivh ./packages-microsoft-prod.rpm \
+    && rm -f packages-microsoft-prod.rpm
 
 # Fetch and install current and previous root certificate from yum server
 ADD --chmod=644 https://raw.githubusercontent.com/statens-pensjonskasse/internal-ca-certificates/refs/heads/main/spk-root-ca-current.pem /etc/pki/ca-trust/source/anchors/
 ADD --chmod=644 https://raw.githubusercontent.com/statens-pensjonskasse/internal-ca-certificates/refs/heads/main/spk-root-ca-previous.pem /etc/pki/ca-trust/source/anchors/
 RUN update-ca-trust extract
 
-# Install extra yum repositories - EPEL, Docker, Microsoft and Azul Zulu (java)
-RUN ${PACKAGE_MANAGER} ${PACKAGE_MANAGER_FLAGS} install -y epel-release
-RUN curl -sSL -o /etc/yum.repos.d/docker-ce.repo https://download.docker.com/linux/rhel/docker-ce.repo
-RUN curl -sSL -O https://packages.microsoft.com/config/rhel/${OS_VERSION}/packages-microsoft-prod.rpm \
-    && rpm -ivh ./packages-microsoft-prod.rpm \
-    && rm -f packages-microsoft-prod.rpm
-
-# Add script for enabling internal Yum repositories (and disabling mirrorlists)
-COPY yum-switch-to-internal-repos.sh /usr/local/bin/
 # Evaluate templates for internal Yum repositories
 # Put them in /etc/yum.repos-internal.d so they can be enabled by the enable-internal-yum-repos.sh script
 RUN --mount=type=bind,src=repos,dst=/tmp/repos \
