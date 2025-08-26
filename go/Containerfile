@@ -21,7 +21,7 @@ RUN ${PACKAGE_MANAGER} ${PACKAGE_MANAGER_FLAGS} install \
 
 # Magisk variabel som blir satt til amd64 for linux/amd64 platform og arm64 for linux/arm64 platform
 ARG TARGETARCH
-ARG GO_VERSION=1.22.2
+ARG GO_VERSION=1.25.0
 ARG GOOS=linux
 
 ENV GO_VERSION=${GO_VERSION}

@@ -78,4 +78,4 @@ Available version: `8.3`
 Based on the Rocky Linux 9 minimal images.
 Includes the specified Go version.
 
-Available versions: `1.24.4`
+Available versions: `1.25.0`
