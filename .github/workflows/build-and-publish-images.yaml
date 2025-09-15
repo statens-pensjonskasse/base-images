@@ -83,7 +83,7 @@ jobs:
       packages: write
     strategy:
       matrix:
-        python_version: [ 3.11, 3.12 ]
+        python_version: [ 3.11, 3.12, 3.13 ]
     with:
       image_name: python
       image_tag: "${{ matrix.python_version }}"
