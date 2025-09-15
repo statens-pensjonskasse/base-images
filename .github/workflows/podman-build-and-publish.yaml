@@ -72,12 +72,22 @@ jobs:
         uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392 #v3.6.0
 
       - name: Set up full image reference
-        run: echo "IMAGE_REFERENCE=${{ inputs.registry }}/${{ inputs.registry_path }}/${{ inputs.image_name }}:${{ inputs.image_tag }}" >> $GITHUB_ENV
+        run: |
+          echo "IMAGE_REFERENCE=${{ inputs.registry }}/${{ inputs.registry_path }}/${{ inputs.image_name }}:${{ inputs.image_tag }}" >> $GITHUB_ENV
+          echo "CACHE_IMAGE=${{ inputs.registry }}/${{ inputs.registry_path }}/${{ inputs.image_name }}:cache" >> $GITHUB_ENV
 
       - name: Login to Container Registry
         run: |
           # Use provided token or fallback to github.token
           echo "${{ secrets.registry_token || github.token }}" | podman login ${{ inputs.registry }} -u ${{ github.actor }} --password-stdin
+
+      - name: Pull previous image for layer caching
+        run: |
+          # Try to pull the previous version of the image to use as cache
+          podman pull ${{ env.IMAGE_REFERENCE }} || echo "No previous image found, building from scratch"
+          
+          # Also try to pull the cache tag if it exists
+          podman pull ${{ env.CACHE_IMAGE }} || echo "No cache image found"
 
       - name: Build container image
         run: |
@@ -89,6 +99,7 @@ jobs:
             --file ${{ inputs.containerfile }} \
             --manifest ${{ env.IMAGE_REFERENCE }} \
             --platform ${{ inputs.platforms }} \
+            --layers \
             --annotation 'org.opencontainers.image.revision=${{ github.sha }}' \
             --annotation 'org.opencontainers.image.created=$(date -u +%Y-%m-%dT%H:%M:%SZ)' \
             --annotation 'org.opencontainers.image.url=${{ github.server_url }}/${{ github.repository }}'"
@@ -120,4 +131,9 @@ jobs:
 
       - name: Push image to Container Registry only on main branch
         if: github.ref == 'refs/heads/main'
-        run: podman manifest push ${{ env.IMAGE_REFERENCE }}
+        run: |
+          podman manifest push ${{ env.IMAGE_REFERENCE }}
+          
+          # Also push a cache tag for future builds
+          podman tag ${{ env.IMAGE_REFERENCE }} ${{ env.CACHE_IMAGE }}
+          podman push ${{ env.CACHE_IMAGE }}
