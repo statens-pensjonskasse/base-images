@@ -63,8 +63,8 @@ jobs:
       packages: write
     strategy:
       matrix:
-        java_version: [ 21 ]
-        maven_version: [ 3.9.9 ]
+        java_version: [ 21, 25 ]
+        maven_version: [ 3.9.11 ]
     with:
       image_name: maven
       image_tag: '${{ matrix.maven_version }}-zulu-openjdk-${{ matrix.java_version }}'
