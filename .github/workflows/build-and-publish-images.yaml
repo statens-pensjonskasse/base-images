@@ -42,7 +42,7 @@ jobs:
       packages: write
     strategy:
       matrix:
-        java_version: [ 21 ]
+        java_version: [ 21, 25 ]
         java_type: [ jdk, jre ]
     with:
       image_name: zulu-openjdk
