@@ -85,7 +85,7 @@ jobs:
         run: |
           # Try to pull the previous version of the image to use as cache
           podman pull ${{ env.IMAGE_REFERENCE }} || echo "No previous image found, building from scratch"
-          
+
           # Also try to pull the cache tag if it exists
           podman pull ${{ env.CACHE_IMAGE }} || echo "No cache image found"
 
@@ -133,7 +133,7 @@ jobs:
         if: github.ref == 'refs/heads/main'
         run: |
           podman manifest push ${{ env.IMAGE_REFERENCE }}
-          
+
           # Also push a cache tag for future builds
           podman tag ${{ env.IMAGE_REFERENCE }} ${{ env.CACHE_IMAGE }}
           podman push ${{ env.CACHE_IMAGE }}
