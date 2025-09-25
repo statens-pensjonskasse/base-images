@@ -38,14 +38,14 @@ in your build file, as root, before `dnf install`.
 Based on the previous Rocky Linux 9 minimal images.
 We create both JRE and JDK flavours of the images.
 
-Available versions: `21-jre`, `21-jdk`
+Available versions: `21-jre`, `25-jre`, `21-jdk`, `25-jdk`
 
 ## 🪶 Maven
 
 Based on the previous Zulu OpenJDK JDK images.
-Only Maven 3.9.9 with Java 21 is supported.
+Only Maven 3.9.11 with Java 25 is supported.
 
-Available version: `3.9.9-zulu-openjdk-21`
+Available version: `3.9.11-zulu-openjdk-25`
 
 ## 🟩 Node.js
 

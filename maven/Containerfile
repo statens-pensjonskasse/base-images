@@ -1,8 +1,8 @@
-ARG BASE_IMAGE=ghcr.io/statens-pensjonskasse/zulu-openjdk:21-jdk
+ARG BASE_IMAGE=ghcr.io/statens-pensjonskasse/zulu-openjdk:25-jdk
 FROM ${BASE_IMAGE}
 
 ARG PACKAGE_MANAGER=microdnf
-ARG MAVEN_VERSION="3.9.9"
+ARG MAVEN_VERSION="3.9.11"
 ARG EXTRA_PACKAGES=""
 
 USER root
