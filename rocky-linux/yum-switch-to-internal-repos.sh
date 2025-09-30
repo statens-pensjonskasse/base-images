@@ -4,9 +4,9 @@ set -o errexit # Avslutter umiddelbart hvis et statement returnerer false
 
 cd /etc/yum.repos.d
 
-sed -i 's/^mirrorlist=/#mirrorlist=/' rocky*.repo
-sed -i 's/^#baseurl=/baseurl=/' rocky*.repo epel*.repo
-sed -i 's/^metalink=/#metalink=/' rocky*.repo
+sed -i 's/^mirrorlist=/#mirrorlist=/' [Rr]ocky*.repo
+sed -i 's/^#baseurl=/baseurl=/' [Rr]ocky*.repo epel*.repo
+sed -i 's/^metalink=/#metalink=/' [Rr]ocky*.repo
 
 cp -vp /etc/yum.repos-internal.d/* .
 rm -v docker-ce.repo microsoft-prod.repo epel*.repo
