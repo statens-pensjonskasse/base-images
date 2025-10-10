@@ -64,7 +64,7 @@ Available versions: `22`, `22-builder`, `24`, `24-builder`
 Based on the Rocky Linux 9 minimal images.
 Includes the specified Python version with pip, MSSQL ODBC driver, and Poetry for dependency management.
 
-Available versions: `3.11`, `3.12`
+Available versions: `3.11`, `3.12, 3.13, 3.14`
 
 ## 🐘 PHP
 
