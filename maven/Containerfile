@@ -7,6 +7,8 @@ ARG EXTRA_PACKAGES=""
 
 USER root
 
+ADD --chmod=755 maven-switch-to-internal-nexus.sh /usr/local/bin/
+
 RUN ${PACKAGE_MANAGER} install -y \
         curl \
         fontconfig \
@@ -25,7 +27,6 @@ RUN curl -sSL -O "https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}
     tar -xvf "apache-maven-${MAVEN_VERSION}-bin.tar" -C "/opt" &&\
     rm "apache-maven-${MAVEN_VERSION}-bin.tar" &&\
     rm -f "/opt/apache-maven-${MAVEN_VERSION}/conf/settings.xml" &&\
-    ln -s "/opt/maven-settings/settings.xml" "/opt/apache-maven-${MAVEN_VERSION}/conf/settings.xml" &&\
     alternatives --install "/usr/bin/mvn" mvn "/opt/apache-maven-${MAVEN_VERSION}/bin/mvn" 2000
 
 RUN ln -s "/opt/apache-maven-${MAVEN_VERSION}" "/opt/apache-maven-latest3"
