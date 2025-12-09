@@ -22,10 +22,11 @@ fi
 # Gjør secrets tilgjengelige som miljøvariable. Kan ikke brukes i Kubernetes, kan derfor disables
 if [[ "$EXPOSE_SWARM_SECRETS" = true ]] ; then
     shopt -s nullglob # patterns which match no files expands to a null string
-
     for file in /run/secrets/* ; do
-        echo "Eksponerer secret $(basename "$file") som envvar..."
-        eval export $(basename "$file")="$(cat "$file")"
+        fn1=$(basename "$file")
+        fn2="${fn1//-/_}" # bytt ut '-' med '_' i variabelnavnet pga Microsoft
+        echo "Eksponerer secret $fn1 som $fn2 envvar..."
+        eval export "$fn2"="$(cat "$file")"
     done
     shopt -u nullglob
 fi
