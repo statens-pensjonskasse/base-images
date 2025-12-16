@@ -35,9 +35,8 @@ RUN curl -sSL -O https://packages.microsoft.com/config/rhel/${OS_VERSION}/packag
     && rpm -ivh ./packages-microsoft-prod.rpm \
     && rm -f packages-microsoft-prod.rpm
 
-# Fetch and install current and previous root certificate from yum server
-ADD --chmod=644 https://raw.githubusercontent.com/statens-pensjonskasse/internal-ca-certificates/refs/heads/main/spk-root-ca-current.pem /etc/pki/ca-trust/source/anchors/
-ADD --chmod=644 https://raw.githubusercontent.com/statens-pensjonskasse/internal-ca-certificates/refs/heads/main/spk-root-ca-previous.pem /etc/pki/ca-trust/source/anchors/
+# Fetch and install current root certificate from github
+ADD --chmod=644 https://raw.githubusercontent.com/statens-pensjonskasse/internal-ca-certificates/refs/heads/main/spk-root-ca.pem /etc/pki/ca-trust/source/anchors/
 RUN update-ca-trust extract
 
 # Evaluate templates for internal Yum repositories
