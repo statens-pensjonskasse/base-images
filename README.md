@@ -9,7 +9,7 @@ The container images are currently built using `podman` on internal GitHub Runne
 The `Containerfiles` take advantage of the `ARG` instruction to allow for customisation of the build process.
 Inspect each `Containerfile` for the available arguments.
 
-## 🪨 Rocky Linux 8 and 9
+## 🪨 Rocky Linux 8, 9, and 10
 
 Based on the latest `rockylinux` images.
 Primarily used as base images for other images.
@@ -22,6 +22,8 @@ Available versions:
 * `8-minimal`
 * `9`
 * `9-minimal`
+* `10`
+* `10-minimal`
 
 ### Yum repositories
 
