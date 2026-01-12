@@ -26,9 +26,10 @@ ARG GOOS=linux
 
 ENV GO_VERSION=${GO_VERSION}
 
-RUN curl -sfLO https://go.dev/dl/go${GO_VERSION}.${GOOS}-${TARGETARCH}.tar.gz && \
-    tar -C /usr/local -xzf go${GO_VERSION}.${GOOS}-${TARGETARCH}.tar.gz && \
-    rm go${GO_VERSION}.${GOOS}-${TARGETARCH}.tar.gz
+RUN curl -sfLO https://go.dev/dl/go${GO_VERSION}.${GOOS}-${TARGETARCH}.tar.gz \
+    && [ -s go${GO_VERSION}.${GOOS}-${TARGETARCH}.tar.gz ] \
+    && tar -C /usr/local -xzf go${GO_VERSION}.${GOOS}-${TARGETARCH}.tar.gz \
+    && rm go${GO_VERSION}.${GOOS}-${TARGETARCH}.tar.gz
 
 USER app
 
