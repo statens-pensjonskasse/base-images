@@ -15,7 +15,7 @@ RUN ${PACKAGE_MANAGER} ${PACKAGE_MANAGER_FLAGS} install \
     gcc \
     pkg-config \
     make \
-    tar-2:1.34-7 \
+    tar \
     git && \
     ${PACKAGE_MANAGER} clean all
 
@@ -26,9 +26,10 @@ ARG GOOS=linux
 
 ENV GO_VERSION=${GO_VERSION}
 
-RUN curl -sfLO https://go.dev/dl/go${GO_VERSION}.${GOOS}-${TARGETARCH}.tar.gz && \
-    tar -C /usr/local -xzf go${GO_VERSION}.${GOOS}-${TARGETARCH}.tar.gz && \
-    rm go${GO_VERSION}.${GOOS}-${TARGETARCH}.tar.gz
+RUN curl -sfLO https://go.dev/dl/go${GO_VERSION}.${GOOS}-${TARGETARCH}.tar.gz
+RUN tar -C /tmp -xzf go${GO_VERSION}.${GOOS}-${TARGETARCH}.tar.gz
+RUN tar -C /usr/local -xzf go${GO_VERSION}.${GOOS}-${TARGETARCH}.tar.gz
+RUN rm go${GO_VERSION}.${GOOS}-${TARGETARCH}.tar.gz
 
 USER app
 
