@@ -15,7 +15,7 @@ RUN ${PACKAGE_MANAGER} ${PACKAGE_MANAGER_FLAGS} install \
     gcc \
     pkg-config \
     make \
-    tar \
+    tar-2:1.34-7 \
     git && \
     ${PACKAGE_MANAGER} clean all
 
