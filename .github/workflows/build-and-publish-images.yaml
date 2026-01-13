@@ -140,7 +140,7 @@ jobs:
       packages: write
     strategy:
       matrix:
-        go_version: [ 1.25.0 ]
+        go_version: [ 1.25.4 ]
     with:
       image_name: go
       image_tag: "${{ matrix.go_version }}"
