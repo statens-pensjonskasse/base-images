@@ -27,7 +27,7 @@ ARG GOOS=linux
 ENV GO_VERSION=${GO_VERSION}
 
 RUN curl -sfLO https://go.dev/dl/go${GO_VERSION}.${GOOS}-${TARGETARCH}.tar.gz
-RUN tar -C /tmp -xzf go${GO_VERSION}.${GOOS}-${TARGETARCH}.tar.gz
+RUN tar -xzf go${GO_VERSION}.${GOOS}-${TARGETARCH}.tar.gz
 RUN tar -C /usr/local -xzf go${GO_VERSION}.${GOOS}-${TARGETARCH}.tar.gz
 RUN rm go${GO_VERSION}.${GOOS}-${TARGETARCH}.tar.gz
 
