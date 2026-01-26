@@ -140,7 +140,13 @@ jobs:
       packages: write
     strategy:
       matrix:
+        platform: [ linux/amd64, linux/arm64 ]
         go_version: [ 1.25.0 ]
+        include:
+          - platform: linux/amd64
+            runner_tag: ubuntu-latest
+          - platform: linux/arm64
+            runner_tag: ubuntu-24.04-arm
     with:
       image_name: go
       image_tag: "${{ matrix.go_version }}"
@@ -148,5 +154,6 @@ jobs:
       build_args: >
         BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal,
         GO_VERSION=${{ matrix.go_version }}
-      platforms: linux/amd64,linux/arm64
+      platforms: ${{ matrix.platform }}
+      runner_tag: ${{ matrix.runner_tag }}
       description: Go container image based on Rocky Linux 9 minimal for SPK
