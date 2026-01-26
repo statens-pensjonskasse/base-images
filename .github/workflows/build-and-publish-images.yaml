@@ -129,7 +129,7 @@ jobs:
       image_name: php-mssql
       image_tag: 8.3
       containerfile: php-mssql/Containerfile
-      platforms: linux/amd64,linux/arm64
+      platforms: linux/amd64
       description: PHP 8.3 container image based on plain ubuntu 22.04
 
   go:
