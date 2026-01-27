@@ -145,11 +145,13 @@ jobs:
         include:
           - platform: linux/amd64
             runner_tag: ubuntu-latest
+            arch_suffix: amd64
           - platform: linux/arm64
             runner_tag: ubuntu-24.04-arm
+            arch_suffix: arm64
     with:
       image_name: go
-      image_tag: "${{ matrix.go_version }}"
+      image_tag: "${{ matrix.go_version }}-${{ matrix.arch_suffix }}"
       containerfile: go/Containerfile
       build_args: >
         BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal,
@@ -157,3 +159,27 @@ jobs:
       platforms: ${{ matrix.platform }}
       runner_tag: ${{ matrix.runner_tag }}
       description: Go container image based on Rocky Linux 9 minimal for SPK
+
+  go-manifest:
+    needs: go
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      packages: write
+    strategy:
+      matrix:
+        go_version: [ 1.25.6 ]
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@b5ca514318bd6ebac0fb2aedd5d36ec1b5c232a2 # v3.10.0
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create and push multi-arch manifest
+        run: |
+          docker buildx imagetools create -t ghcr.io/statens-pensjonskasse/go:${{ matrix.go_version }} \
+            ghcr.io/statens-pensjonskasse/go:${{ matrix.go_version }}-amd64 \
+            ghcr.io/statens-pensjonskasse/go:${{ matrix.go_version }}-arm64
