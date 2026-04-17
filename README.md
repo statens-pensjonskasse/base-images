@@ -82,4 +82,4 @@ Not available on arm64.
 Based on the Rocky Linux 9 minimal images.
 Includes the specified Go version.
 
-Available versions: `1.25.6`
+Available versions: `1.25.6`,  `1.26.0`
