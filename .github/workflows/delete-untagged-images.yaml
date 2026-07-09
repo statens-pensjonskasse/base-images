@@ -1,0 +1,38 @@
+name: Delete untagged container images
+
+on:
+  schedule:
+    - cron: '37 3 12 * *' # Every 12th at 03:37 UTC
+      timezone: 'Europe/Oslo'
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: 'Log deletions without making changes'
+        type: boolean
+        default: false
+
+jobs:
+  delete-untagged:
+    name: Delete untagged – ${{ matrix.package }}
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        package:
+          - nodejs
+          - zulu-openjdk
+          - rockylinux
+          - go
+          - python
+          - maven
+          - php-mssql
+    steps:
+      - uses: dataaxiom/ghcr-cleanup-action@d52806a0dc70b430571a37da1fde39733ffd640f # v1.2.2
+        with:
+          owner: statens-pensjonskasse
+          package: ${{ matrix.package }}
+          delete-untagged: true
+          dry-run: ${{ inputs.dry-run }}
+          token: ${{ secrets.GITHUB_TOKEN }}
