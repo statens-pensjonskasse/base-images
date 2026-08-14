@@ -34,5 +34,6 @@ jobs:
           owner: statens-pensjonskasse
           package: ${{ matrix.package }}
           delete-untagged: true
+          older-than: 2 months
           dry-run: ${{ inputs.dry-run }}
           token: ${{ secrets.GITHUB_TOKEN }}
