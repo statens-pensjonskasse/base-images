@@ -39,6 +39,17 @@ RUN curl -sSL -O https://packages.microsoft.com/config/rhel/${OS_VERSION}/packag
 ADD --chmod=644 https://raw.githubusercontent.com/statens-pensjonskasse/internal-ca-certificates/refs/heads/main/spk-root-ca.pem /etc/pki/ca-trust/source/anchors/
 RUN update-ca-trust extract
 
+# Temporary workaround for eMudhra Intermediate CA Compromise (ref https://emudhra.we-have-a-problem.com/)
+# Can be removed once Rocky Linux ca-certificates package has been updated
+RUN d=/etc/pki/ca-trust/source/blocklist; [ -d $d ] || d=/etc/pki/ca-trust/source/blacklist && \
+    trust extract --overwrite --format=pem-bundle \
+    --filter='pkcs11:object=Comodo%20AAA%20Services%20root;type=cert' \
+    $d/Comodo_AAA_Services_root.pem && \
+    trust extract --overwrite --format=pem-bundle \
+    --filter='pkcs11:object=emSign%20ECC%20Root%20CA%20-%20G3;type=cert' \
+    $d/emSign_ECC_Root_CA_-_G3.pem && \
+    update-ca-trust
+
 # Evaluate templates for internal Yum repositories
 # Put them in /etc/yum.repos-internal.d so they can be enabled by the enable-internal-yum-repos.sh script
 RUN --mount=type=bind,src=repos,dst=/tmp/repos \
