@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal
+ARG BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:10-minimal
 FROM ${BASE_IMAGE}
 
 ARG NODEJS_VERSION=24
