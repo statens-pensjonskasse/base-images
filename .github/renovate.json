@@ -5,8 +5,8 @@
   ],
   "packageRules": [
     {
-      "description": "Only allow patch updates from GitHub releases",
-      "matchDatasources": ["github-releases"],
+      "description": "Only allow patch updates from GitHub tags",
+      "matchDatasources": ["github-tags"],
       "matchUpdateTypes": ["major", "minor"],
       "enabled": false
     }
