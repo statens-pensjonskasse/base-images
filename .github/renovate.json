@@ -7,8 +7,8 @@
     {
       "description": "Only allow patch updates from GitHub tags",
       "matchDatasources": ["github-tags"],
-      "matchUpdateTypes": ["major", "minor"],
-      "enabled": false
+      "matchPackageNames": ["golang/go"],
+      "allowedVersions": "<{{major}}.{{add minor 1}}.0"
     }
   ]
 }
