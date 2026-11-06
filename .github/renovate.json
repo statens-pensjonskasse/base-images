@@ -1,5 +1,14 @@
 {
   "extends": [
-    "github>statens-pensjonskasse/renovate-presets:recommended.json"
+    "github>statens-pensjonskasse/renovate-presets:recommended.json",
+    "github>statens-pensjonskasse/renovate-presets:renovate-comments(\\.yaml$,(\\.yml$))"
+  ],
+  "packageRules": [
+    {
+      "description": "Only allow patch updates from GitHub tags",
+      "matchDatasources": ["github-tags"],
+      "matchUpdateTypes": ["major", "minor"],
+      "enabled": false
+    }
   ]
 }
