@@ -106,6 +106,7 @@ jobs:
         version:
           - { nodejs: 22, npm: 10 }
           - { nodejs: 24, npm: 11 }
+          - { nodejs: 26, npm: 11 }
         type:
           - { tag: ' ', additional_packages: ' ' }
           - { tag: -builder, additional_packages: git nss freetype harfbuzz gcc-c++ make bzip2 xorg-x11-server-Xvfb gtk2-devel gtk3-devel libnotify-devel GConf2 nss libXScrnSaver alsa-lib chromium }
