@@ -30,8 +30,9 @@ RUN --mount=type=bind,source=repos/nodesource-nodejs.repo.tmpl,target=/tmp/nodes
     eval "echo \"$(cat /tmp/nodesource-nodejs.repo.tmpl)\"" > "/etc/yum.repos.d/nodesource-nodejs.repo"
 
 # Installer pakker
-RUN ${PACKAGE_MANAGER} module disable -y nodejs && \
-    ${PACKAGE_MANAGER} ${PACKAGE_MANAGER_FLAGS} install \
+# Kun Rocky <=9 har nodejs-module
+RUN if grep '^ROCKY_SUPPORT_PRODUCT_VERSION=' /etc/os-release | cut -d= -f2 | tr -d '"' | grep '^9\.' ; then ${PACKAGE_MANAGER} module disable -y nodejs ; fi
+RUN ${PACKAGE_MANAGER} ${PACKAGE_MANAGER_FLAGS} install \
     ${INSTALL_PACKAGES} \
     ${ADDITIONAL_PACKAGES} && \
     ${PACKAGE_MANAGER} clean all && \
