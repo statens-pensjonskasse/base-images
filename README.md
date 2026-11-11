@@ -59,7 +59,9 @@ We provide two versions of this image:
 * Builder image with additional development packages including git, gcc-c++,
   and GUI-related dependencies for headless browser testing
 
-Available versions: `22`, `22-builder`, `24`, `24-builder`
+Available versions: `22`, `22-builder`, `24`, `24-builder`, `26`, `26-builder`
+
+Node.js 26 is the current LTS release. Please upgrade to `26` / `26-builder`.
 
 ## 🐍 Python
 
