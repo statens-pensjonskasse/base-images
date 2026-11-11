@@ -52,7 +52,7 @@ Available version: `3.9.11-zulu-openjdk-25`
 ## 🟩 Node.js
 
 Based on the Rocky Linux minimal images.
-Nodejs version 24 runs on Rocky Linux 9 with npm 11, while Nodejs version 26 runs on Rocky Linux 10 with npm 12.
+Nodejs version 24 runs on Rocky Linux 9 with npm 11, while Nodejs version 26 runs on Rocky Linux 9 with npm 12.
 
 We provide two versions of this image:
 

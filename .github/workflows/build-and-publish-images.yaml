@@ -105,7 +105,7 @@ jobs:
       matrix:
         version:
           - { nodejs: 24, npm: 11, rockylinux_version: 9 }
-          - { nodejs: 26, npm: 12, rockylinux_version: 10 }
+          - { nodejs: 26, npm: 12, rockylinux_version: 9 }
         type:
           - { tag: ' ', additional_packages: ' ' }
           - { tag: -builder, additional_packages: git nss freetype harfbuzz gcc-c++ make bzip2 xorg-x11-server-Xvfb gtk2-devel gtk3-devel libnotify-devel GConf2 nss libXScrnSaver alsa-lib chromium }
