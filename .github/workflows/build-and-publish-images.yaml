@@ -104,8 +104,8 @@ jobs:
     strategy:
       matrix:
         version:
-          - { nodejs: 24, npm: 11 }
-          - { nodejs: 26, npm: 11 }
+          - { nodejs: 24, npm: 11, rockylinux_version: 9 }
+          - { nodejs: 26, npm: 12, rockylinux_version: 10 }
         type:
           - { tag: ' ', additional_packages: ' ' }
           - { tag: -builder, additional_packages: git nss freetype harfbuzz gcc-c++ make bzip2 xorg-x11-server-Xvfb gtk2-devel gtk3-devel libnotify-devel GConf2 nss libXScrnSaver alsa-lib chromium }
@@ -114,7 +114,7 @@ jobs:
       image_tag: "${{ matrix.version.nodejs }}${{ matrix.type.tag }}"
       containerfile: nodejs/Containerfile
       build_args: >
-        BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:9-minimal,
+        BASE_IMAGE=ghcr.io/statens-pensjonskasse/rockylinux:${{ matrix.version.rockylinux_version }}-minimal,
         NODEJS_VERSION=${{ matrix.version.nodejs }},
         NPM_VERSION=${{ matrix.version.npm }},
         ADDITIONAL_PACKAGES=\"${{ matrix.type.additional_packages }}\"
