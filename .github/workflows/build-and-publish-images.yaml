@@ -6,7 +6,7 @@ on:
       - '*'
   workflow_dispatch:
   schedule:
-    - cron: '32 21 8-14 * SUN' # Kjør den 2. søndagen i hver måned klokken 21:32
+    - cron: '32 21 8 * *' # Kjør den 8. i hver måned klokken 21:32
 
 jobs:
   rockylinux:
