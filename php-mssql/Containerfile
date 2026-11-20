@@ -79,8 +79,8 @@ RUN apt-get update \
 # Configure PHP
 RUN curl -fL https://github.com/php/pie/releases/download/${PIE_VERSION}/pie.phar -o /usr/local/bin/pie \
     && chmod +x /usr/local/bin/pie
-RUN pie install --skip-enable-extension microsoft/sqlsrv
-RUN pie install --skip-enable-extension microsoft/pdo_sqlsrv
+RUN pie install --skip-enable-extension microsoft/sqlsrv:~5.13.0
+RUN pie install --skip-enable-extension microsoft/pdo_sqlsrv:~5.13.0
 RUN pie install --skip-enable-extension pecl/mcrypt --with-mcrypt=/usr
 RUN printf "; priority=20\nextension=sqlsrv.so\n" > /etc/php/${PHP_VERSION}/mods-available/sqlsrv.ini
 RUN printf "; priority=30\nextension=pdo_sqlsrv.so\n" > /etc/php/${PHP_VERSION}/mods-available/pdo_sqlsrv.ini
