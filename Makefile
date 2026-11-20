@@ -8,11 +8,10 @@ help:
 php-build: ## Bygger php-image
 	docker build -f php-mssql/Containerfile -t php-mssql php-mssql
 
-# .PHONY: php-run
-# php-run: build clean  ## Bygger og starter container  på 8080 med html-filer mountet lokalt. Ment for lokal tykklient-utvikling
-# 	docker run -d -p 8080:8080 -v ${PWD}/html:/var/www/html -e DB_DATABASE=${DB_DATABASE}  --name php-mssql php-mssql
-# 	@echo "Åpne applikasjon på http://localhost:8080/"
+.PHONY: php-run-shell
+php-run-shell: php-build ## Bygger og starter shell i container
+	docker run -it --rm --entrypoint /bin/bash --name php-mssql php-mssql:latest
 
-.PHONY: php-clean
-php-clean:  ## Fjerner kjørende container
-	docker rm -f php-mssql || true
+# .PHONY: php-clean
+# php-clean:  ## Fjerner kjørende container
+# 	docker rm -f php-mssql || true
