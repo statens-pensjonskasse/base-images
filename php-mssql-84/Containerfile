@@ -38,9 +38,8 @@ RUN apt-get update \
     && apt-get autoremove -y \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Last ned script for å installere PHP extensions
+# Installer PHP extensions med nedlastet script
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/install-php-extensions
-# Installerer PHP extensions
 RUN chmod uga+x /usr/bin/install-php-extensions \
     && sync \
     && install-php-extensions mcrypt pdo_sqlsrv sqlsrv
@@ -48,11 +47,10 @@ RUN chmod uga+x /usr/bin/install-php-extensions \
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
 
-
+# Konfigurer Apache httpd
 COPY ./resources/000-default.conf /etc/apache2/sites-available/
 COPY ./resources/ldap.conf /etc/apache2/mods-available/
 RUN a2enmod rewrite ldap authnz_ldap
-
 RUN sed -i 's/^Listen 80/Listen 8080/' /etc/apache2/ports.conf
 
 # Add app user with uid 1000
@@ -61,18 +59,6 @@ RUN useradd --uid 1000 app \
 #
 EXPOSE 8080
 WORKDIR /var/www/html/
-
-# Default config. Overrides i compose-file eller med docker run
-ENV EXPOSE_SWARM_SECRETS=true
-ENV SERVER_NAME=base-php-mssql
-ENV DB_SERVER=kasper.utv.spk.no
-ENV DB_USER=topp
-ENV DB_DATABASE=kasper_ci_develop
-# Passord kan enten leses fra miljøvariabel DB_PASSWORD (usikkert, til bruk kun under utvikling) eller fra en fil ved å sette
-# DB_PASSWORD_FILE, til bruk f.eks. i swarm, der passordet hentes fra en secret, f.eks. /run/secrets/kasper_topp_password
-# DB_PASSWORD_FILE har presedens over DB_PASSWORD
-ENV DB_PASSWORD=Templet
-ENV DB_PASSWORD_FILE=""
 
 # Skal ikke kjøre som root
 USER app
