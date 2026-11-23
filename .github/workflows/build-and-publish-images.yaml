@@ -146,7 +146,7 @@ jobs:
         BASE_IMAGE=php:8.4-apache,
         ODBC_VERSION=18
       platforms: linux/amd64
-      description: PHP 8.4 image based on official php-apache image, with added support for mssql
+      description: PHP 8.4 image based on official php-apache image (Debian), with added support for mssql
 
   go:
     uses: ./.github/workflows/podman-build-and-publish.yaml

@@ -73,12 +73,17 @@ Available versions: `3.11`, `3.12`
 
 ## 🐘 PHP
 
+Not available on arm64.
+
+### Version `8.3`
+
 Based on the plain ubuntu 22.04 image. Runs as non-root (User "app", uid 1000)
 Includes the specified PHP version with MSSQL ODBC driver.
 
-Available version: `8.3`
+### Version `8.4`
 
-Not available on arm64.
+Based on the official PHP image, adding SPK CA, locale, MSSQL support and composer.
+Application runs as non-root (User "app", uid 1000).
 
 ## 🐹 Go
 

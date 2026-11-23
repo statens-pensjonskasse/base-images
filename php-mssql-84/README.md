@@ -1,7 +1,7 @@
 # Base-php-mssql
 
 Tilbyr en apache-installasjon med mod_php som har innebygd støtte for Microsoft SQL Server, som er
-nødvendig for å koble seg til kasper-databasen. PHP har ikke støtte for det som default, man må kompilere selv.
+nødvendig for å koble seg til kasper-databasen. PHP har ikke støtte for det som default.
 
 Det er ikke nødvendig å bruke dette imaget hvis du ikke trenger tilgang til MSSQL. Det finnes offisielle PHP-images som kan egne seg bedre enn denne.
 
