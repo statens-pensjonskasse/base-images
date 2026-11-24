@@ -35,6 +35,7 @@ RUN ${PACKAGE_MANAGER} module disable -y nodejs && \
     ${INSTALL_PACKAGES} \
     ${ADDITIONAL_PACKAGES} && \
     ${PACKAGE_MANAGER} clean all && \
-    npm install -g npm@${NPM_VERSION}
+    npm install -g npm@${NPM_VERSION} && \
+    npm cache clean --force
 
 USER app
