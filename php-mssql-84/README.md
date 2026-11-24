@@ -1,7 +1,7 @@
 # Base-php-mssql
 
 Tilbyr en apache-installasjon med mod_php som har innebygd støtte for Microsoft SQL Server, som er
-nødvendig for å koble seg til kasper-databasen. PHP har ikke støtte for det som default, man må kompilere selv.
+nødvendig for å koble seg til kasper-databasen. PHP har ikke støtte for det som default.
 
 Det er ikke nødvendig å bruke dette imaget hvis du ikke trenger tilgang til MSSQL. Det finnes offisielle PHP-images som kan egne seg bedre enn denne.
 
@@ -20,29 +20,6 @@ ENV SERVER_NAME <appnname>
 ```
 
 og ADDe html-filer under /var/www/html.
-
-*Husk at /run.sh er ENTRYPOINT*
-*Dersom du trenger egne tilpasninger, legg til fila /run-local.sh og gjør den excecutable. Hvis den finnes, vil den eksekveres før apache starter*
-
-## Bruk i Kubernetes
-
-Hvis en tjeneste skal kjøre i kubernetes går vår swarm-tilpasning for å eksponere secrets i beina på kubernetes sin løsning for secrets.
-Vi må derfor disable eksponering av secrets (evt. overstyre ENTRYPOINT, men da på egen risiki)
-
-Det gjøres ved å sette miljøvariabelen EXPOSE_SWARM_SECRETS til false. Merk at utviklerne typisk ikke trenger forholde seg til denne,
-det skal håndteres av deploy-rammeverket.
-
-## Databasepassord
-
-For å slippe å ha oppstartskode i applikasjonene som bruker dette imaget, håndterer vi det hemmelige databasepassordet i base-imaget.
-Derfor, i applikasjonskoden, bruk variabelen DB_PASSWORD for databasepassord.
-Under utvikling, med kjente passord, kan verdien sendes inn direkte med -e, men det er sikkerhetsmessig utrygt.
-
-For kjøring i produksjon eller på Docker Swarm, der vi ikke sender inn hemmeligheter som miljøvariabler av sikkerhetshensyn, men bruker Docker Swarm Secrets,
-skal man angi filen som databasepassordet ligger i med ENV-variablen DB_PASSWORD_FILE. Da blir innholdet i angitt fil tilgjengeliggjort for applikasjonen
-i variabelen DB_PASSWORD.
-Siden det gjøres av init-scriptet blir den ikke synlig utenfra.
-Så i Docker Swarm setter vi typisk `DB_PASSWORD_FILE=/run/secrets/kasper_topp_password`
 
 ## Autentisering
 
@@ -86,10 +63,8 @@ Se Cron Admin-appen for eksempel.
 
 # Bygging lokalt
 
-Bruk `make build` for å bygge og `make run-shell` for å få et shell i containeren med en random bruker.
+Bruk `make php-build` for å bygge og `make php-run-shell` for å få et shell i containeren.
 
-`make run` starter webserveren lokalt på port 8080
+# Bygging og publisering
 
-# Bygging og push til SPK dockerhub
-
-Gjøres av Jenkins pipeline.
+Bygg gjøres av workflow på alle brancher. På main gjøres i tillegg publisering av image.

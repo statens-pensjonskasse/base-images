@@ -1,0 +1,64 @@
+ARG BASE_IMAGE=php:8.4-apache
+FROM ${BASE_IMAGE}
+ARG ODBC_VERSION=18
+
+ENV ACCEPT_EULA=Y
+
+# Installerer rotsertifikater, henter gjeldende fra github
+ADD --chmod=644 https://raw.githubusercontent.com/statens-pensjonskasse/internal-ca-certificates/refs/heads/main/spk-root-ca.pem /usr/local/share/ca-certificates/
+# Ubuntu krever at sertifikatene slutter med .crt og ikke .pem
+RUN for file in /usr/local/share/ca-certificates/*.pem ; do \
+        mv -v -- "$file" "${file%.pem}.crt" ; \
+    done
+RUN update-ca-certificates
+
+# Installerer diverse prerequisites
+RUN apt-get update \
+    && apt-get install -y apt-transport-https curl gnupg2 libpng-dev libzip-dev locales unzip \
+    && rm -rf /var/lib/apt/lists/*
+
+# Locale og tidssone
+RUN ln -sf /usr/share/zoneinfo/Europe/Oslo /etc/localtime
+RUN printf '%s\n' LANG=en_US LC_ALL=en_US.UTF-8 >/etc/default/locale
+RUN echo en_US.UTF-8 UTF-8 >>/etc/locale.gen
+RUN locale-gen
+ENV LANG='en_US.UTF-8'
+ENV LANGUAGE='en_US:en'
+ENV LC_ALL='en_US.UTF-8'
+
+# Microsoft-repo og microsoft-odbc-driver
+RUN . /etc/os-release \
+    && curl -sSL -O https://packages.microsoft.com/config/$ID/$VERSION_ID/packages-microsoft-prod.deb \
+    && apt install ./packages-microsoft-prod.deb \
+    && rm packages-microsoft-prod.deb
+RUN apt-get update \
+    && ACCEPT_EULA=Y apt-get install -y --no-install-recommends \
+        msodbcsql${ODBC_VERSION} \
+        unixodbc-dev \
+    && apt-get autoremove -y \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Installer PHP extensions med nedlastet script
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/install-php-extensions
+RUN chmod uga+x /usr/bin/install-php-extensions \
+    && sync \
+    && install-php-extensions mcrypt pdo_sqlsrv sqlsrv
+
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
+
+# Konfigurer Apache httpd
+COPY ./resources/000-default.conf /etc/apache2/sites-available/
+COPY ./resources/ldap.conf /etc/apache2/mods-available/
+RUN a2enmod rewrite ldap authnz_ldap
+RUN sed -i 's/^Listen 80/Listen 8080/' /etc/apache2/ports.conf
+
+# Add app user with uid 1000
+RUN useradd --uid 1000 app \
+    && chown -R app:app /var/log/apache2/ /var/run/apache2/
+#
+EXPOSE 8080
+WORKDIR /var/www/html/
+
+# Skal ikke kjøre som root
+USER app
